@@ -1,0 +1,528 @@
+# Pixorly Implementation Plan
+
+**Project**: Pixorly - AI Image Generation Platform  
+**Date**: January 15, 2026  
+**Based on**: [SPEC.md](SPEC.md)  
+**Status**: Planning Phase
+
+---
+
+## 🎯 Project Overview
+
+Building a platform-agnostic AI image generation studio using:
+- **Frontend**: Next.js 14 (App Router) + TypeScript + Tailwind CSS
+- **Backend**: Convex (serverless) + TypeScript
+- **Storage**: AWS S3 + CloudFront CDN
+- **Auth**: Clerk
+- **AI**: OpenRouter (multi-model support)
+
+---
+
+## Phase 1: Core Infrastructure Setup (Week 1-2)
+**Priority: CRITICAL** - Foundation for everything else
+
+### 1.1 Repository & Development Environment
+- [ ] Initialize Next.js 14 project with App Router
+- [ ] Configure TypeScript with strict mode
+- [ ] Set up Tailwind CSS and design system basics
+- [ ] Configure ESLint + Prettier
+- [ ] Create Docker development environment
+- [ ] Set up Git hooks (Husky) for pre-commit checks
+- [ ] Configure VS Code workspace settings
+
+### 1.2 AWS Infrastructure
+- [ ] Create AWS account and configure IAM users
+- [ ] Set up S3 bucket (`pixorly-images-prod`) with versioning
+- [ ] Configure S3 lifecycle policies (Glacier after 90 days)
+- [ ] Create CloudFront distribution with OAI
+- [ ] Generate CloudFront key pair for signed URLs
+- [ ] Configure AWS Secrets Manager for credentials
+- [ ] Set up CloudWatch log groups
+- [ ] Create IAM policies for application access
+
+### 1.3 Convex Backend Setup
+- [ ] Initialize Convex project
+- [ ] Define database schema (users, images, generationJobs, collections, apiKeys, usage)
+- [ ] Set up Convex development environment
+- [ ] Configure Convex authentication with Clerk
+- [ ] Create database indexes for performance
+- [ ] Set up Convex file storage (optional backup)
+
+### 1.4 Authentication (Clerk)
+- [ ] Create Clerk application
+- [ ] Configure Clerk in Next.js middleware
+- [ ] Set up Clerk webhooks for user sync to Convex
+- [ ] Implement user creation flow
+- [ ] Add sign-up/sign-in UI components
+- [ ] Configure session management
+- [ ] Set up protected routes
+
+---
+
+## Phase 2: Core Image Generation (Week 3-4)
+**Priority: HIGH** - MVP feature
+
+### 2.1 OpenRouter Integration
+- [ ] Create OpenRouter account and get API key
+- [ ] Implement OpenRouterClient class
+- [ ] Add model configuration (SDXL, DALL-E 3, Midjourney)
+- [ ] Create cost calculation utilities
+- [ ] Implement error handling and retry logic
+- [ ] Add request timeout handling
+- [ ] Create model abstraction layer
+
+### 2.2 Generation Backend (Convex)
+- [ ] Implement `createGenerationJob` mutation
+- [ ] Create `processGeneration` action (calls OpenRouter)
+- [ ] Add S3 upload logic with AWS SDK
+- [ ] Implement storage quota checking
+- [ ] Create `completeGeneration` mutation
+- [ ] Add `updateStorageUsage` mutation
+- [ ] Implement job status tracking
+- [ ] Add error handling and failure recovery
+
+### 2.3 Generation Frontend
+- [ ] Create generation page (`/generate`)
+- [ ] Build prompt input component
+- [ ] Add model selector UI (grid/cards)
+- [ ] Implement parameter controls (basic/advanced modes)
+- [ ] Create real-time status tracking component
+- [ ] Add progress indicators
+- [ ] Implement result display
+- [ ] Add download functionality
+
+### 2.4 Image Storage & CDN
+- [ ] Implement S3 upload in processGeneration
+- [ ] Generate CloudFront URLs
+- [ ] Create signed URL generation for private images
+- [ ] Add image metadata storage
+- [ ] Implement lazy loading with placeholders
+- [ ] Add image optimization hooks
+
+---
+
+## Phase 3: User Management & Billing (Week 5)
+**Priority: HIGH** - Required for revenue
+
+### 3.1 User Account Management
+- [ ] Create user profile page
+- [ ] Display storage usage meter
+- [ ] Show credit balance
+- [ ] Add plan information display
+- [ ] Implement account settings
+- [ ] Add usage history view
+
+### 3.2 Subscription & Billing (Stripe Recommended)
+- [ ] Set up Stripe account
+- [ ] Create Pro tier product ($29/month)
+- [ ] Create Enterprise tier product (custom)
+- [ ] Implement Stripe checkout flow
+- [ ] Add subscription management UI
+- [ ] Create webhook handler for Stripe events
+- [ ] Implement plan upgrade/downgrade logic
+- [ ] Add invoice/receipt display
+- [ ] Configure trial period (7 days)
+
+### 3.3 Credit System
+- [ ] Implement credit deduction on generation
+- [ ] Add credit purchase flow
+- [ ] Create credit top-up options
+- [ ] Implement low-credit alerts
+- [ ] Add credit history tracking
+- [ ] Create admin credit adjustment (support)
+
+---
+
+## Phase 4: Gallery & Library (Week 6)
+**Priority: MEDIUM** - Enhances user experience
+
+### 4.1 Image Gallery
+- [ ] Create gallery page with infinite scroll
+- [ ] Implement grid view layout
+- [ ] Add filter by model/date/tags
+- [ ] Create search by prompt (Convex search index)
+- [ ] Build lightbox view component
+- [ ] Add metadata display on hover
+- [ ] Implement bulk selection
+- [ ] Add bulk download functionality
+- [ ] Create bulk delete with confirmation
+
+### 4.2 Collections
+- [ ] Implement `createCollection` mutation
+- [ ] Build collections management UI
+- [ ] Add drag-and-drop to collections
+- [ ] Create collection detail view
+- [ ] Implement public/private sharing
+- [ ] Add collection cover selection
+- [ ] Create collection invitation system (Enterprise)
+
+### 4.3 Image Management
+- [ ] Implement `deleteImage` mutation with S3 cleanup
+- [ ] Add image editing metadata
+- [ ] Create tagging system
+- [ ] Implement image export options
+- [ ] Add sharing functionality
+- [ ] Create embed code generation
+
+---
+
+## Phase 5: API & Developer Features (Week 7)
+**Priority: MEDIUM** - For Pro/Enterprise users
+
+### 5.1 API Key Management
+- [ ] Implement `createApiKey` mutation
+- [ ] Add API key hashing and storage
+- [ ] Build API keys management UI
+- [ ] Add key rotation functionality
+- [ ] Implement key permissions system
+- [ ] Create API key usage tracking
+- [ ] Add last-used timestamp display
+
+### 5.2 REST API Endpoints
+- [ ] Create `/api/v1/generate` endpoint
+- [ ] Add `/api/v1/status/:jobId` endpoint
+- [ ] Implement `/api/v1/images` listing
+- [ ] Create `/api/v1/images/:id` detail endpoint
+- [ ] Add `/api/v1/images/:id` delete endpoint
+- [ ] Implement `/api/v1/models` endpoint
+- [ ] Add rate limiting middleware
+- [ ] Create API documentation (OpenAPI/Swagger)
+
+### 5.3 Webhooks
+- [ ] Implement webhook registration
+- [ ] Add webhook signature verification
+- [ ] Create webhook event system
+- [ ] Implement webhook delivery queue
+- [ ] Add retry logic for failed webhooks
+- [ ] Build webhooks management UI
+- [ ] Create webhook logs/history
+
+---
+
+## Phase 6: Monitoring & Operations (Week 8)
+**Priority: MEDIUM** - Production readiness
+
+### 6.1 AWS CloudWatch Setup
+- [ ] Configure CloudWatch custom metrics
+- [ ] Implement metric logging (generations, errors)
+- [ ] Create CloudWatch dashboard
+- [ ] Set up alarms (error rate, latency, costs)
+- [ ] Configure log aggregation
+- [ ] Add structured logging
+- [ ] Implement log retention policies
+
+### 6.2 Error Tracking (Sentry)
+- [ ] Set up Sentry project
+- [ ] Integrate Sentry in Next.js
+- [ ] Add Sentry to Convex actions
+- [ ] Configure error filtering
+- [ ] Set up error alerts
+- [ ] Create error assignment workflow
+
+### 6.3 Analytics (PostHog)
+- [ ] Set up PostHog project
+- [ ] Integrate PostHog in frontend
+- [ ] Define key events to track
+- [ ] Implement event tracking
+- [ ] Create funnels (signup, generation, upgrade)
+- [ ] Set up user cohorts
+- [ ] Build analytics dashboard
+
+### 6.4 Performance Monitoring
+- [ ] Add performance markers
+- [ ] Implement Core Web Vitals tracking
+- [ ] Monitor API response times
+- [ ] Track S3 upload performance
+- [ ] Add CloudFront cache hit ratio monitoring
+- [ ] Create performance budget
+
+---
+
+## Phase 7: Security & Compliance (Week 9)
+**Priority: HIGH** - Required for production
+
+### 7.1 Security Hardening
+- [ ] Implement rate limiting (per-user, per-IP)
+- [ ] Add CSRF protection
+- [ ] Configure security headers (CSP, HSTS, etc.)
+- [ ] Implement request validation (Zod schemas)
+- [ ] Add SQL injection prevention (N/A for Convex)
+- [ ] Configure CORS policies
+- [ ] Add DDoS protection (Cloudflare/AWS Shield)
+
+### 7.2 Content Moderation
+- [ ] Integrate OpenAI Moderation API
+- [ ] Implement prompt filtering
+- [ ] Add image content moderation (AWS Rekognition)
+- [ ] Create flagging system
+- [ ] Build moderation queue (admin)
+- [ ] Add banned words list
+- [ ] Implement user reporting
+
+### 7.3 Privacy & Compliance
+- [ ] Add privacy policy page
+- [ ] Create terms of service
+- [ ] Implement GDPR data export
+- [ ] Add account deletion flow (S3 cleanup)
+- [ ] Create data retention policies
+- [ ] Implement cookie consent
+- [ ] Add data processing agreements (DPAs)
+
+---
+
+## Phase 8: Testing & Quality Assurance (Week 10)
+**Priority: HIGH** - Production readiness
+
+### 8.1 Unit Tests
+- [ ] Set up Jest + React Testing Library
+- [ ] Write tests for components (>80% coverage)
+- [ ] Test Convex queries/mutations
+- [ ] Add utility function tests
+- [ ] Test OpenRouter client
+- [ ] Test credit calculation logic
+- [ ] Configure test coverage reporting
+
+### 8.2 Integration Tests
+- [ ] Test Clerk authentication flow
+- [ ] Test S3 upload/download
+- [ ] Test CloudFront signed URLs
+- [ ] Test Stripe webhook handling
+- [ ] Test OpenRouter API integration
+- [ ] Test email sending (AWS SES)
+
+### 8.3 E2E Tests (Playwright)
+- [ ] Set up Playwright
+- [ ] Test signup/login flow
+- [ ] Test image generation flow
+- [ ] Test subscription purchase
+- [ ] Test gallery operations
+- [ ] Test API key creation/usage
+- [ ] Configure CI/CD for E2E tests
+
+---
+
+## Phase 9: UI/UX Polish (Week 11)
+**Priority: MEDIUM** - User experience
+
+### 9.1 Design System
+- [ ] Define color palette
+- [ ] Create typography scale
+- [ ] Build component library (buttons, inputs, cards)
+- [ ] Add loading states
+- [ ] Create error states
+- [ ] Design empty states
+- [ ] Add animations/transitions
+- [ ] Implement dark mode
+
+### 9.2 Responsive Design
+- [ ] Optimize for mobile (320px+)
+- [ ] Test tablet layouts (768px+)
+- [ ] Ensure desktop experience (1024px+)
+- [ ] Add touch-friendly interactions
+- [ ] Test on various devices
+
+### 9.3 Accessibility
+- [ ] Add ARIA labels
+- [ ] Ensure keyboard navigation
+- [ ] Test with screen readers
+- [ ] Add focus indicators
+- [ ] Ensure color contrast (WCAG AA)
+- [ ] Add skip links
+- [ ] Test with accessibility tools
+
+---
+
+## Phase 10: Advanced Features (Week 12+)
+**Priority: LOW** - Future enhancements
+
+### 10.1 Advanced Generation Features
+- [ ] Add batch generation
+- [ ] Implement model comparison (side-by-side)
+- [ ] Add custom presets
+- [ ] Create prompt templates library
+- [ ] Add prompt enhancement (AI)
+- [ ] Implement variation generation
+- [ ] Add seed locking for consistency
+
+### 10.2 Collaboration (Enterprise)
+- [ ] Create team workspace schema
+- [ ] Implement team member invitations
+- [ ] Add role-based permissions
+- [ ] Create shared collections
+- [ ] Implement commenting system
+- [ ] Add activity feed
+- [ ] Create team usage dashboard
+
+### 10.3 Phase 2 Features (Image Editing)
+- [ ] Research image editing APIs
+- [ ] Implement inpainting
+- [ ] Add outpainting
+- [ ] Create upscaling feature
+- [ ] Implement background removal
+- [ ] Add style transfer
+- [ ] Create batch editing
+
+---
+
+## Phase 11: Marketing & Launch Prep (Week 13)
+**Priority: MEDIUM** - Go-to-market
+
+### 11.1 Landing Page
+- [ ] Design landing page
+- [ ] Add hero section with demo
+- [ ] Create features showcase
+- [ ] Add pricing comparison table
+- [ ] Implement waitlist/signup CTA
+- [ ] Add testimonials section
+- [ ] Create FAQ section
+
+### 11.2 Documentation
+- [ ] Write API documentation
+- [ ] Create getting started guide
+- [ ] Add video tutorials
+- [ ] Build example gallery
+- [ ] Create troubleshooting guide
+- [ ] Add best practices guide
+- [ ] Create changelog
+
+### 11.3 Marketing Assets
+- [ ] Create brand guidelines
+- [ ] Design social media graphics
+- [ ] Record product demo video
+- [ ] Write blog launch post
+- [ ] Prepare press kit
+- [ ] Set up analytics goals
+
+---
+
+## Phase 12: Deployment & Launch (Week 14)
+**Priority: CRITICAL** - Production launch
+
+### 12.1 Production Deployment
+- [ ] Configure Vercel production environment
+- [ ] Set up production Convex deployment
+- [ ] Configure production AWS resources
+- [ ] Set up custom domain + SSL
+- [ ] Configure DNS (CloudFlare/Route53)
+- [ ] Test production environment
+- [ ] Create deployment runbook
+
+### 12.2 CI/CD Pipeline
+- [ ] Set up GitHub Actions
+- [ ] Configure automated tests
+- [ ] Add build optimization
+- [ ] Implement preview deployments
+- [ ] Configure production deployments
+- [ ] Add deployment notifications
+- [ ] Create rollback procedures
+
+### 12.3 Monitoring & Alerts
+- [ ] Configure production alerts
+- [ ] Set up on-call rotation
+- [ ] Create incident response plan
+- [ ] Add status page
+- [ ] Configure uptime monitoring
+- [ ] Set up log aggregation
+- [ ] Create operational dashboard
+
+### 12.4 Launch Checklist
+- [ ] Load testing (simulate 1000 concurrent users)
+- [ ] Security audit
+- [ ] Performance optimization
+- [ ] Backup/disaster recovery testing
+- [ ] Legal review (privacy policy, ToS)
+- [ ] Support system setup
+- [ ] Soft launch (beta users)
+- [ ] Public launch announcement
+
+---
+
+## Dependencies & Risks
+
+### Critical Path
+1. AWS Infrastructure → Backend Setup → Generation Feature → Billing → Launch
+2. Any delay in AWS setup blocks all storage features
+3. Billing integration required before public launch
+
+### Key Risks
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| OpenRouter API downtime | High | Implement circuit breaker, retry logic |
+| AWS costs exceed budget | Medium | Set up billing alerts, implement quotas |
+| Clerk service outage | High | Implement graceful degradation |
+| S3 upload failures | High | Retry logic, queue system |
+| Credit card fraud | Medium | Stripe Radar, manual review queue |
+
+---
+
+## Resource Requirements
+
+### Team Size (Recommended)
+- 1 Full-stack Engineer (Phase 1-4, 6-12)
+- 1 Backend Engineer (Phase 2-3, 5)
+- 1 Frontend Engineer (Phase 4, 9)
+- 1 DevOps Engineer (Phase 1, 6, 12)
+- 1 QA Engineer (Phase 8)
+
+### Estimated Timeline
+- **MVP (Phases 1-3, 8, 12)**: 6-8 weeks
+- **Full Launch (All Phases)**: 12-14 weeks
+- **Solo Developer**: 20-24 weeks
+
+### Monthly Costs (Estimated)
+- **Development**:
+  - Vercel: $20
+  - Convex: $25
+  - AWS (dev): $50
+  - Clerk: $25
+  - Total: ~$120/month
+
+- **Production (100 users)**:
+  - Vercel: $20
+  - Convex: $50
+  - AWS S3+CloudFront: $100
+  - Clerk: $100
+  - OpenRouter: Variable (pay-per-use)
+  - Stripe: 2.9% + $0.30/transaction
+  - Sentry: $26
+  - PostHog: Free (self-hosted) or $0
+  - Total: ~$300/month + OpenRouter costs
+
+---
+
+## Success Metrics
+
+### MVP Launch (Week 8)
+- [ ] 10 beta users generating images
+- [ ] 100+ images generated successfully
+- [ ] <1% error rate
+- [ ] <5s average generation time
+- [ ] 0 critical bugs
+
+### Public Launch (Week 14)
+- [ ] 100+ registered users
+- [ ] 50+ paid subscribers
+- [ ] 1000+ images generated
+- [ ] 99.9% uptime
+- [ ] <2s page load time (p95)
+
+### 3 Months Post-Launch
+- [ ] 500+ paid subscribers
+- [ ] $15,000+ MRR
+- [ ] 10,000+ images generated
+- [ ] <5% churn rate
+- [ ] NPS score >40
+
+---
+
+## Notes
+
+**Priority Levels:**
+- **CRITICAL**: Blocks launch, must complete
+- **HIGH**: Important for MVP quality
+- **MEDIUM**: Enhances experience, can be post-launch
+- **LOW**: Nice-to-have, future iterations
+
+**Update Frequency**: Review and update this plan weekly during development
+
+**Last Updated**: January 15, 2026
