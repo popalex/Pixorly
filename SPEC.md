@@ -20,12 +20,14 @@
 ### 1.2 Target Users and Use Cases
 
 **Primary Users:**
+
 - **Digital Artists & Designers**: Experimenting with multiple AI models for creative projects
 - **Content Creators**: Generating images for social media, blogs, and marketing materials
 - **Developers**: Integrating AI image generation into their applications via API
 - **Agencies**: Creating client assets with multiple model options
 
 **Key Use Cases:**
+
 - Prompt-based image generation with model comparison
 - Batch generation for A/B testing creative concepts
 - Building image libraries with metadata and organization
@@ -79,7 +81,8 @@
 ### 2.2 Technology Stack
 
 **Frontend:**
-- **Framework**: Next.js 14+ with App Router (recommended for better performance, built-in layouts, and server components)
+
+- **Framework**: Next.js 15+ with App Router (recommended for better performance, built-in layouts, and server components)
 - **Language**: TypeScript
 - **UI Library**: React 18+
 - **Styling**: Tailwind CSS
@@ -87,6 +90,7 @@
 - **Form Handling**: React Hook Form + Zod validation
 
 **Backend:**
+
 - **Platform**: Convex (serverless backend)
 - **Language**: TypeScript
 - **Authentication**: Clerk
@@ -94,6 +98,7 @@
 - **Real-time**: Convex subscriptions
 
 **External Services:**
+
 - **AI Models**: OpenRouter API
 - **CDN**: AWS CloudFront
 - **Monitoring**: AWS CloudWatch + Sentry
@@ -101,6 +106,7 @@
 - **Email**: AWS SES
 
 **DevOps:**
+
 - **Containerization**: Docker & Docker Compose
 - **CI/CD**: GitHub Actions
 - **Hosting**: Vercel (Frontend), Convex Cloud (Backend)
@@ -205,11 +211,7 @@ export default defineSchema({
 
   usage: defineTable({
     userId: v.id("users"),
-    type: v.union(
-      v.literal("generation"),
-      v.literal("api_call"),
-      v.literal("storage")
-    ),
+    type: v.union(v.literal("generation"), v.literal("api_call"), v.literal("storage")),
     credits: v.number(),
     metadata: v.optional(v.any()),
     timestamp: v.number(),
@@ -220,9 +222,10 @@ export default defineSchema({
 ### 2.4 Docker Container Structure
 
 **Development Environment:**
+
 ```yaml
 # docker-compose.yml
-version: '3.8'
+version: "3.8"
 
 services:
   web:
@@ -256,6 +259,7 @@ services:
 ```
 
 **Production Dockerfile:**
+
 ```dockerfile
 # Dockerfile
 FROM node:20-alpine AS base
@@ -328,7 +332,7 @@ export interface ModelConfig {
 }
 
 export const AVAILABLE_MODELS: Record<string, ModelConfig> = {
-  "sdxl": {
+  sdxl: {
     id: "stability-ai/stable-diffusion-xl",
     name: "Stable Diffusion XL",
     provider: "Stability AI",
@@ -338,7 +342,7 @@ export const AVAILABLE_MODELS: Record<string, ModelConfig> = {
     costPerImage: 0.02,
     estimatedTime: 8,
   },
-  "dalle3": {
+  dalle3: {
     id: "openai/dall-e-3",
     name: "DALL-E 3",
     provider: "OpenAI",
@@ -348,7 +352,7 @@ export const AVAILABLE_MODELS: Record<string, ModelConfig> = {
     costPerImage: 0.04,
     estimatedTime: 12,
   },
-  "midjourney": {
+  midjourney: {
     id: "midjourney/v6",
     name: "Midjourney v6",
     provider: "Midjourney",
@@ -368,15 +372,12 @@ export class OpenRouterClient {
     this.apiKey = apiKey;
   }
 
-  async generateImage(
-    modelId: string,
-    params: ImageGenerationParams
-  ): Promise<string> {
+  async generateImage(modelId: string, params: ImageGenerationParams): Promise<string> {
     // Implementation for OpenRouter API call
     const response = await fetch(`${this.baseUrl}/images/generations`, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${this.apiKey}`,
+        Authorization: `Bearer ${this.apiKey}`,
         "Content-Type": "application/json",
         "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL,
         "X-Title": "Pixorly",
@@ -413,6 +414,7 @@ export class OpenRouterClient {
 #### 3.1.1 Image Generation Workflow
 
 **User Journey:**
+
 1. User authenticates and lands on the generation interface
 2. User enters a text prompt and selects model
 3. User configures generation parameters (size, steps, guidance)
@@ -422,6 +424,7 @@ export class OpenRouterClient {
 7. User can download, share, or add to collections
 
 **Technical Flow:**
+
 ```typescript
 // convex/mutations/generateImage.ts
 export const createGenerationJob = mutation({
@@ -437,7 +440,7 @@ export const createGenerationJob = mutation({
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
-    
+
     // Validate credits
     const cost = calculateCost(args.model, args.parameters);
     if (user.credits < cost) {
@@ -467,12 +470,14 @@ export const createGenerationJob = mutation({
 #### 3.1.2 Model Selection and Configuration
 
 **Model Selector UI:**
+
 - Grid/list view of available models
 - Model cards showing: name, provider, sample images, cost, speed
 - Filter by: price, speed, style capabilities
 - Comparison mode (side-by-side generation)
 
 **Parameter Controls:**
+
 - **Basic Mode**: Prompt only (auto-optimized settings)
 - **Advanced Mode**: Full control over all parameters
 - Preset configurations (Portrait, Landscape, Square, etc.)
@@ -490,7 +495,7 @@ export function GenerationStatus({ jobId }: { jobId: Id<"generationJobs"> }) {
   return (
     <div className="status-card">
       <StatusIndicator status={job.status} />
-      <ProgressBar 
+      <ProgressBar
         status={job.status}
         startedAt={job.startedAt}
         estimatedTime={getEstimatedTime(job.model)}
@@ -509,6 +514,7 @@ export function GenerationStatus({ jobId }: { jobId: Id<"generationJobs"> }) {
 #### 3.1.4 Gallery & Library Management
 
 **Features:**
+
 - Grid view with infinite scroll
 - Filter by: model, date, tags, collections
 - Search by prompt text (Convex search index)
@@ -517,6 +523,7 @@ export function GenerationStatus({ jobId }: { jobId: Id<"generationJobs"> }) {
 - Full-screen lightbox view
 
 **Collections:**
+
 - Create named collections
 - Drag-and-drop organization
 - Public/private sharing
@@ -525,6 +532,7 @@ export function GenerationStatus({ jobId }: { jobId: Id<"generationJobs"> }) {
 #### 3.1.5 User Authentication and Authorization
 
 **Auth Flow (using Clerk):**
+
 ```typescript
 // middleware.ts
 import { authMiddleware } from "@clerk/nextjs";
@@ -540,6 +548,7 @@ export const config = {
 ```
 
 **Authorization Levels:**
+
 - **Pro Tier**: $29/month
   - 500 generations/month
   - 50GB storage
@@ -560,6 +569,7 @@ export const config = {
 #### 3.1.6 Asset Storage Strategy
 
 **AWS S3 + CloudFront Storage:**
+
 ```typescript
 // convex/actions/processGeneration.ts
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
@@ -578,7 +588,7 @@ export const processGeneration = action({
     // Get job details
     const job = await ctx.runQuery(internal.queries.getJob, { jobId });
     const user = await ctx.runQuery(internal.queries.getUser, { userId: job.userId });
-    
+
     // Generate image via OpenRouter
     const client = new OpenRouterClient(process.env.OPENROUTER_API_KEY!);
     const imageUrl = await client.generateImage(job.model, {
@@ -590,7 +600,7 @@ export const processGeneration = action({
     const imageResponse = await fetch(imageUrl);
     const imageBuffer = await imageResponse.arrayBuffer();
     const fileSize = imageBuffer.byteLength;
-    
+
     // Check storage quota
     if (user.storageUsed + fileSize > user.storageLimit) {
       throw new Error("Storage quota exceeded");
@@ -599,19 +609,21 @@ export const processGeneration = action({
     // Upload to S3
     const s3Key = `images/${job.userId}/${jobId}/${Date.now()}.png`;
     const bucketName = process.env.AWS_S3_BUCKET!;
-    
-    await s3Client.send(new PutObjectCommand({
-      Bucket: bucketName,
-      Key: s3Key,
-      Body: Buffer.from(imageBuffer),
-      ContentType: "image/png",
-      Metadata: {
-        userId: job.userId,
-        jobId: jobId,
-        model: job.model,
-      },
-    }));
-    
+
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: bucketName,
+        Key: s3Key,
+        Body: Buffer.from(imageBuffer),
+        ContentType: "image/png",
+        Metadata: {
+          userId: job.userId,
+          jobId: jobId,
+          model: job.model,
+        },
+      })
+    );
+
     // Generate CloudFront URL
     const cloudFrontUrl = `https://${process.env.AWS_CLOUDFRONT_DOMAIN}/${s3Key}`;
 
@@ -628,7 +640,7 @@ export const processGeneration = action({
         height: job.parameters.height,
       },
     });
-    
+
     // Update user storage usage
     await ctx.runMutation(internal.mutations.updateStorageUsage, {
       userId: job.userId,
@@ -639,6 +651,7 @@ export const processGeneration = action({
 ```
 
 **CDN Strategy (AWS CloudFront):**
+
 - CloudFront distribution in front of S3 bucket
 - Edge caching for global performance (TTL: 1 year)
 - Lambda@Edge for image transformation (resize, format conversion)
@@ -650,6 +663,7 @@ export const processGeneration = action({
 ### 3.2 Phase 2 Features (Image Editing)
 
 **Planned Capabilities:**
+
 - Inpainting and outpainting
 - Image-to-image transformations
 - Upscaling and enhancement
@@ -677,7 +691,7 @@ export const getUserImages = query({
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .order("desc")
       .paginate({ numItems: args.limit || 20, cursor: args.cursor });
-    
+
     return images;
   },
 });
@@ -700,8 +714,7 @@ export const searchImages = query({
     return await ctx.db
       .query("images")
       .withSearchIndex("search_prompt", (q) =>
-        q.search("prompt", args.searchTerm)
-          .eq("userId", args.userId)
+        q.search("prompt", args.searchTerm).eq("userId", args.userId)
       )
       .collect();
   },
@@ -736,10 +749,10 @@ export const deleteImage = mutation({
   handler: async (ctx, args) => {
     const image = await ctx.db.get(args.imageId);
     if (!image) throw new Error("Image not found");
-    
+
     // Delete from storage
     await ctx.storage.delete(image.storageId);
-    
+
     // Delete from database
     await ctx.db.delete(args.imageId);
   },
@@ -754,7 +767,7 @@ export const createCollection = mutation({
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
-    
+
     return await ctx.db.insert("collections", {
       userId: user._id,
       name: args.name,
@@ -781,15 +794,15 @@ export const processGeneration = action({
 export const handleWebhook = httpAction(async (ctx, request) => {
   const signature = request.headers.get("x-webhook-signature");
   const payload = await request.json();
-  
+
   // Verify signature
   if (!verifySignature(payload, signature)) {
     return new Response("Invalid signature", { status: 401 });
   }
-  
+
   // Process webhook
   await ctx.runMutation(internal.mutations.processWebhook, payload);
-  
+
   return new Response("OK", { status: 200 });
 });
 ```
@@ -798,22 +811,19 @@ export const handleWebhook = httpAction(async (ctx, request) => {
 
 ```typescript
 // pages/api/v1/generate.ts
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   // Validate API key
-  const apiKey = req.headers.authorization?.replace('Bearer ', '');
+  const apiKey = req.headers.authorization?.replace("Bearer ", "");
   const user = await validateApiKey(apiKey);
-  
+
   if (!user) {
-    return res.status(401).json({ error: 'Invalid API key' });
+    return res.status(401).json({ error: "Invalid API key" });
   }
 
   // Create generation via Convex
@@ -826,13 +836,14 @@ export default async function handler(
 
   return res.status(202).json({
     jobId,
-    status: 'pending',
+    status: "pending",
     statusUrl: `/api/v1/status/${jobId}`,
   });
 }
 ```
 
 **API Endpoints:**
+
 - `POST /api/v1/generate` - Create generation job
 - `GET /api/v1/status/:jobId` - Check job status
 - `GET /api/v1/images` - List user images
@@ -843,6 +854,7 @@ export default async function handler(
 ### 4.5 Webhook Support
 
 **Webhook Events:**
+
 - `generation.started`
 - `generation.completed`
 - `generation.failed`
@@ -850,6 +862,7 @@ export default async function handler(
 - `credit.depleted`
 
 **Webhook Configuration:**
+
 ```typescript
 // User registers webhook URL in settings
 await ctx.db.insert("webhooks", {
@@ -883,6 +896,7 @@ await ctx.db.insert("webhooks", {
 ### 5.1.1 AWS Infrastructure Setup
 
 **1. Create S3 Bucket:**
+
 ```bash
 aws s3 mb s3://pixorly-images-prod --region us-east-1
 
@@ -898,6 +912,7 @@ aws s3api put-bucket-lifecycle-configuration \
 ```
 
 **s3-lifecycle.json:**
+
 ```json
 {
   "Rules": [
@@ -919,6 +934,7 @@ aws s3api put-bucket-lifecycle-configuration \
 ```
 
 **2. Create CloudFront Distribution:**
+
 ```bash
 # Create Origin Access Identity
 aws cloudfront create-cloud-front-origin-access-identity \
@@ -929,24 +945,19 @@ aws cloudfront create-cloud-front-origin-access-identity \
 ```
 
 **3. Configure IAM User for Application:**
+
 ```json
 {
   "Version": "2012-10-17",
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": [
-        "s3:PutObject",
-        "s3:GetObject",
-        "s3:DeleteObject"
-      ],
+      "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
       "Resource": "arn:aws:s3:::pixorly-images-prod/*"
     },
     {
       "Effect": "Allow",
-      "Action": [
-        "cloudfront:CreateInvalidation"
-      ],
+      "Action": ["cloudfront:CreateInvalidation"],
       "Resource": "*"
     }
   ]
@@ -954,6 +965,7 @@ aws cloudfront create-cloud-front-origin-access-identity \
 ```
 
 **4. Store Secrets in AWS Secrets Manager:**
+
 ```bash
 aws secretsmanager create-secret \
   --name pixorly/production \
@@ -1044,6 +1056,7 @@ NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
 ### 5.5 Testing Strategy
 
 **Unit Tests (Jest + Testing Library):**
+
 ```typescript
 // __tests__/components/ImageCard.test.tsx
 import { render, screen } from '@testing-library/react';
@@ -1061,34 +1074,37 @@ describe('ImageCard', () => {
         }}
       />
     );
-    
+
     expect(screen.getByText('A beautiful sunset')).toBeInTheDocument();
   });
 });
 ```
 
 **Integration Tests:**
+
 - Test Convex mutations with test backend
 - Mock OpenRouter API responses
 - Test file upload/download flows
 
 **E2E Tests (Playwright):**
+
 ```typescript
 // e2e/generation-flow.spec.ts
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('complete generation flow', async ({ page }) => {
-  await page.goto('/');
-  await page.fill('[data-testid="prompt-input"]', 'A mountain landscape');
-  await page.selectOption('[data-testid="model-select"]', 'sdxl');
+test("complete generation flow", async ({ page }) => {
+  await page.goto("/");
+  await page.fill('[data-testid="prompt-input"]', "A mountain landscape");
+  await page.selectOption('[data-testid="model-select"]', "sdxl");
   await page.click('[data-testid="generate-btn"]');
-  
-  await expect(page.locator('[data-testid="status"]')).toContainText('completed');
+
+  await expect(page.locator('[data-testid="status"]')).toContainText("completed");
   await expect(page.locator('[data-testid="generated-image"]')).toBeVisible();
 });
 ```
 
 **Test Commands:**
+
 ```bash
 npm run test           # Unit tests
 npm run test:e2e       # E2E tests
@@ -1102,6 +1118,7 @@ npm run test:coverage  # Coverage report
 ### 6.1 Production Deployment
 
 **Frontend (Vercel):**
+
 ```bash
 # Install Vercel CLI
 npm i -g vercel
@@ -1113,6 +1130,7 @@ vercel --prod
 ```
 
 **Backend (Convex):**
+
 ```bash
 # Deploy to production
 npx convex deploy --prod
@@ -1122,6 +1140,7 @@ npx convex env set OPENROUTER_API_KEY sk-or-v1-xxxxx --prod
 ```
 
 **Docker Deployment (Self-hosted):**
+
 ```bash
 # Build production image
 docker build -t pixorly:latest .
@@ -1133,24 +1152,28 @@ docker-compose -f docker-compose.prod.yml up -d
 ### 6.2 Scaling Considerations
 
 **Database Scaling:**
+
 - Convex automatically scales with usage
 - Index optimization for frequent queries
 - Pagination for large datasets
 - Archive old generations after 90 days
 
 **Image Processing:**
+
 - OpenRouter handles model scaling
 - Queue management via Convex scheduler
 - Rate limiting per user tier
 - Circuit breaker for API failures
 
 **File Storage:**
+
 - Convex CDN automatically scales
 - Image optimization at different sizes
 - Lazy loading for performance
 - Cleanup jobs for deleted images
 
 **Monitoring:**
+
 ```typescript
 // Monitor generation queue depth
 export const getQueueMetrics = query({
@@ -1159,12 +1182,12 @@ export const getQueueMetrics = query({
       .query("generationJobs")
       .withIndex("by_status", (q) => q.eq("status", "pending"))
       .collect();
-    
+
     const processing = await ctx.db
       .query("generationJobs")
       .withIndex("by_status", (q) => q.eq("status", "processing"))
       .collect();
-    
+
     return {
       pending: pending.length,
       processing: processing.length,
@@ -1177,6 +1200,7 @@ export const getQueueMetrics = query({
 ### 6.3 CDN and Asset Delivery
 
 **Image URL Structure:**
+
 ```
 # Public images
 https://{cloudfront-domain}/images/{userId}/{jobId}/{timestamp}.png
@@ -1186,6 +1210,7 @@ https://{cloudfront-domain}/images/{userId}/{jobId}/{timestamp}.png?Expires=xxx&
 ```
 
 **AWS CloudFront Configuration:**
+
 - **Origin**: S3 bucket (pixorly-images-prod) with Origin Access Identity (OAI)
 - **Behaviors**:
   - Default: Cache policy with 1 year TTL for public images
@@ -1199,6 +1224,7 @@ https://{cloudfront-domain}/images/{userId}/{jobId}/{timestamp}.png?Expires=xxx&
 - **Price class**: All edge locations for maximum performance
 
 **Image Transformation (Lambda@Edge):**
+
 ```typescript
 // Query parameters for on-the-fly transformation
 ?w=800           // Resize width to 800px
@@ -1209,6 +1235,7 @@ https://{cloudfront-domain}/images/{userId}/{jobId}/{timestamp}.png?Expires=xxx&
 ```
 
 **Optimization:**
+
 - Automatic WebP/AVIF conversion via Lambda@Edge
 - Responsive image sizes with query parameters
 - Cache-Control headers (max-age=31536000, immutable)
@@ -1219,6 +1246,7 @@ https://{cloudfront-domain}/images/{userId}/{jobId}/{timestamp}.png?Expires=xxx&
 ### 6.4 Cost Optimization
 
 **Strategies:**
+
 - Cache model metadata to reduce API calls
 - Batch similar generations when possible
 - Implement request deduplication
@@ -1226,6 +1254,7 @@ https://{cloudfront-domain}/images/{userId}/{jobId}/{timestamp}.png?Expires=xxx&
 - Usage quotas per tier
 
 **Cost Tracking:**
+
 ```typescript
 export const trackCost = mutation({
   args: {
@@ -1239,13 +1268,13 @@ export const trackCost = mutation({
     await ctx.db.patch(args.userId, {
       credits: user!.credits - args.credits,
     });
-    
+
     // Log usage
     await ctx.db.insert("usage", {
       ...args,
       timestamp: Date.now(),
     });
-    
+
     // Check if credits low
     if (user!.credits - args.credits < 10) {
       await ctx.scheduler.runAfter(0, internal.actions.sendLowCreditAlert, {
@@ -1263,6 +1292,7 @@ export const trackCost = mutation({
 ### 7.1 Authentication Flow
 
 **Clerk Integration:**
+
 1. User signs up/in via Clerk
 2. Clerk webhook creates user in Convex
 3. Clerk token validates requests
@@ -1274,20 +1304,20 @@ import { auth } from "@clerk/nextjs";
 
 export async function getCurrentUser(ctx: any) {
   const identity = await ctx.auth.getUserIdentity();
-  
+
   if (!identity) {
     throw new Error("Not authenticated");
   }
-  
+
   const user = await ctx.db
     .query("users")
     .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
     .first();
-  
+
   if (!user) {
     throw new Error("User not found");
   }
-  
+
   return user;
 }
 ```
@@ -1295,6 +1325,7 @@ export async function getCurrentUser(ctx: any) {
 ### 7.2 API Key Management
 
 **Generation & Storage:**
+
 ```typescript
 export const createApiKey = mutation({
   args: {
@@ -1303,11 +1334,11 @@ export const createApiKey = mutation({
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
-    
+
     // Generate random key
     const key = `px_${generateRandomString(32)}`;
     const hashedKey = await hashApiKey(key);
-    
+
     await ctx.db.insert("apiKeys", {
       userId: user._id,
       key: hashedKey,
@@ -1315,7 +1346,7 @@ export const createApiKey = mutation({
       permissions: args.permissions,
       createdAt: Date.now(),
     });
-    
+
     // Return unhashed key only once
     return { key };
   },
@@ -1323,22 +1354,23 @@ export const createApiKey = mutation({
 ```
 
 **Validation:**
+
 ```typescript
 async function validateApiKey(key: string) {
   const hashedKey = await hashApiKey(key);
-  
+
   const apiKey = await ctx.db
     .query("apiKeys")
     .filter((q) => q.eq(q.field("key"), hashedKey))
     .first();
-  
+
   if (!apiKey || (apiKey.expiresAt && apiKey.expiresAt < Date.now())) {
     return null;
   }
-  
+
   // Update last used
   await ctx.db.patch(apiKey._id, { lastUsed: Date.now() });
-  
+
   return apiKey;
 }
 ```
@@ -1346,6 +1378,7 @@ async function validateApiKey(key: string) {
 ### 7.3 Rate Limiting
 
 **Implementation:**
+
 ```typescript
 // convex/rateLimit.ts
 export const checkRateLimit = mutation({
@@ -1354,18 +1387,18 @@ export const checkRateLimit = mutation({
     const user = await ctx.db.get(args.userId);
     const now = Date.now();
     const hourAgo = now - 3600000;
-    
+
     const recentGenerations = await ctx.db
       .query("generationJobs")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
       .filter((q) => q.gte(q.field("_creationTime"), hourAgo))
       .collect();
-    
+
     const limits = {
       pro: 50,
       enterprise: 1000,
     };
-    
+
     if (recentGenerations.length >= limits[user!.plan]) {
       throw new Error("Rate limit exceeded");
     }
@@ -1376,6 +1409,7 @@ export const checkRateLimit = mutation({
 ### 7.4 Data Privacy
 
 **Policies:**
+
 - Images are private by default (signed CloudFront URLs)
 - Users can opt-in to public gallery
 - No training on user-generated content
@@ -1385,35 +1419,38 @@ export const checkRateLimit = mutation({
 - S3 lifecycle policies for cost optimization
 
 **Data Deletion:**
+
 ```typescript
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 export const deleteAccount = mutation({
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
-    
+
     // Delete all user images from S3 and database
     const images = await ctx.db
       .query("images")
       .withIndex("by_user", (q) => q.eq("userId", user._id))
       .collect();
-    
+
     const s3Client = new S3Client({ region: process.env.AWS_REGION! });
-    
+
     for (const image of images) {
       // Delete from S3
-      await s3Client.send(new DeleteObjectCommand({
-        Bucket: image.s3Bucket,
-        Key: image.s3Key,
-      }));
-      
+      await s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: image.s3Bucket,
+          Key: image.s3Key,
+        })
+      );
+
       // Delete from database
       await ctx.db.delete(image._id);
     }
-    
+
     // Delete generations, collections, API keys, usage logs, etc.
-    // ... 
-    
+    // ...
+
     // Delete user
     await ctx.db.delete(user._id);
   },
@@ -1423,6 +1460,7 @@ export const deleteAccount = mutation({
 ### 7.5 Content Moderation
 
 **Prompt Filtering:**
+
 ```typescript
 export const moderatePrompt = action({
   args: { prompt: v.string() },
@@ -1431,14 +1469,14 @@ export const moderatePrompt = action({
     const response = await fetch("https://api.openai.com/v1/moderations", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ input: args.prompt }),
     });
-    
+
     const data = await response.json();
-    
+
     if (data.results[0].flagged) {
       throw new Error("Prompt violates content policy");
     }
@@ -1453,6 +1491,7 @@ export const moderatePrompt = action({
 ### 8.1 Extensibility for New Models
 
 **Plugin Architecture:**
+
 ```typescript
 // lib/models/registry.ts
 interface ModelProvider {
@@ -1465,11 +1504,11 @@ interface ModelProvider {
 
 class ModelRegistry {
   private providers = new Map<string, ModelProvider>();
-  
+
   register(provider: ModelProvider) {
     this.providers.set(provider.id, provider);
   }
-  
+
   get(id: string): ModelProvider {
     return this.providers.get(id);
   }
@@ -1479,6 +1518,7 @@ class ModelRegistry {
 ### 8.2 Collaboration Features
 
 **Planned:**
+
 - Team workspaces
 - Shared collections with permissions
 - Comments on images
@@ -1488,6 +1528,7 @@ class ModelRegistry {
 ### 8.3 Analytics & Monitoring
 
 **Metrics to Track:**
+
 - Generation success/failure rates
 - Average generation time per model
 - User engagement (daily active users)
@@ -1498,6 +1539,7 @@ class ModelRegistry {
 - S3 and CloudFront costs
 
 **AWS CloudWatch Metrics:**
+
 ```typescript
 // Log custom metrics to CloudWatch
 import { CloudWatchClient, PutMetricDataCommand } from "@aws-sdk/client-cloudwatch";
@@ -1509,32 +1551,33 @@ export async function logGenerationMetric(
   model: string,
   duration: number
 ) {
-  await cloudwatch.send(new PutMetricDataCommand({
-    Namespace: "Pixorly/Generations",
-    MetricData: [
-      {
-        MetricName: "GenerationCount",
-        Value: 1,
-        Unit: "Count",
-        Dimensions: [
-          { Name: "Status", Value: status },
-          { Name: "Model", Value: model },
-        ],
-      },
-      {
-        MetricName: "GenerationDuration",
-        Value: duration,
-        Unit: "Seconds",
-        Dimensions: [
-          { Name: "Model", Value: model },
-        ],
-      },
-    ],
-  }));
+  await cloudwatch.send(
+    new PutMetricDataCommand({
+      Namespace: "Pixorly/Generations",
+      MetricData: [
+        {
+          MetricName: "GenerationCount",
+          Value: 1,
+          Unit: "Count",
+          Dimensions: [
+            { Name: "Status", Value: status },
+            { Name: "Model", Value: model },
+          ],
+        },
+        {
+          MetricName: "GenerationDuration",
+          Value: duration,
+          Unit: "Seconds",
+          Dimensions: [{ Name: "Model", Value: model }],
+        },
+      ],
+    })
+  );
 }
 ```
 
 **CloudWatch Alarms:**
+
 - High error rate (> 5% in 5 minutes)
 - API latency (> 3 seconds p95)
 - Storage quota approaching limit (> 90%)
@@ -1542,6 +1585,7 @@ export async function logGenerationMetric(
 - CloudFront 4xx/5xx errors
 
 **Monitoring Tools:**
+
 - **AWS CloudWatch**: Infrastructure metrics, logs, alarms
 - **Sentry**: Application error tracking and performance
 - **PostHog**: Product analytics (user behavior, feature usage)
@@ -1551,6 +1595,7 @@ export async function logGenerationMetric(
 ### 8.4 Mobile Applications
 
 **Future Plans:**
+
 - React Native app (iOS/Android)
 - Share Convex backend
 - Offline mode with sync
@@ -1559,6 +1604,7 @@ export async function logGenerationMetric(
 ### 8.5 Advanced Features
 
 **Roadmap:**
+
 - Image-to-image transformations
 - Video generation support
 - Custom model fine-tuning
@@ -1596,6 +1642,7 @@ export async function logGenerationMetric(
 ### 9.3 Dependencies
 
 **Critical Dependencies:**
+
 - Convex availability (99.9% SLA)
 - OpenRouter API uptime
 - Clerk authentication service
@@ -1641,6 +1688,7 @@ export async function logGenerationMetric(
 ### C. Changelog
 
 **v1.0.0** - January 15, 2026
+
 - Initial specification draft
 - Phase 1 features defined
 - Architecture and technical design complete

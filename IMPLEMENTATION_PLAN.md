@@ -10,7 +10,8 @@
 ## 🎯 Project Overview
 
 Building a platform-agnostic AI image generation studio using:
-- **Frontend**: Next.js 14 (App Router) + TypeScript + Tailwind CSS
+
+- **Frontend**: Next.js 15 (App Router) + TypeScript + Tailwind CSS
 - **Backend**: Convex (serverless) + TypeScript
 - **Storage**: AWS S3 + CloudFront CDN
 - **Auth**: Clerk
@@ -19,18 +20,21 @@ Building a platform-agnostic AI image generation studio using:
 ---
 
 ## Phase 1: Core Infrastructure Setup (Week 1-2)
+
 **Priority: CRITICAL** - Foundation for everything else
 
 ### 1.1 Repository & Development Environment
-- [ ] Initialize Next.js 14 project with App Router
-- [ ] Configure TypeScript with strict mode
-- [ ] Set up Tailwind CSS and design system basics
-- [ ] Configure ESLint + Prettier
-- [ ] Create Docker development environment
-- [ ] Set up Git hooks (Husky) for pre-commit checks
-- [ ] Configure VS Code workspace settings
+
+- [x] Initialize Next.js 15 project with App Router
+- [x] Configure TypeScript with strict mode
+- [x] Set up Tailwind CSS and design system basics
+- [x] Configure ESLint + Prettier
+- [x] Create Docker development environment
+- [x] Set up Git hooks (Husky) for pre-commit checks
+- [x] Configure VS Code workspace settings
 
 ### 1.2 AWS Infrastructure
+
 - [ ] Create AWS account and configure IAM users
 - [ ] Set up S3 bucket (`pixorly-images-prod`) with versioning
 - [ ] Configure S3 lifecycle policies (Glacier after 90 days)
@@ -41,6 +45,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Create IAM policies for application access
 
 ### 1.3 Convex Backend Setup
+
 - [ ] Initialize Convex project
 - [ ] Define database schema (users, images, generationJobs, collections, apiKeys, usage)
 - [ ] Set up Convex development environment
@@ -49,6 +54,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Set up Convex file storage (optional backup)
 
 ### 1.4 Authentication (Clerk)
+
 - [ ] Create Clerk application
 - [ ] Configure Clerk in Next.js middleware
 - [ ] Set up Clerk webhooks for user sync to Convex
@@ -60,9 +66,11 @@ Building a platform-agnostic AI image generation studio using:
 ---
 
 ## Phase 2: Core Image Generation (Week 3-4)
+
 **Priority: HIGH** - MVP feature
 
 ### 2.1 OpenRouter Integration
+
 - [ ] Create OpenRouter account and get API key
 - [ ] Implement OpenRouterClient class
 - [ ] Add model configuration (SDXL, DALL-E 3, Midjourney)
@@ -72,6 +80,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Create model abstraction layer
 
 ### 2.2 Generation Backend (Convex)
+
 - [ ] Implement `createGenerationJob` mutation
 - [ ] Create `processGeneration` action (calls OpenRouter)
 - [ ] Add S3 upload logic with AWS SDK
@@ -82,6 +91,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Add error handling and failure recovery
 
 ### 2.3 Generation Frontend
+
 - [ ] Create generation page (`/generate`)
 - [ ] Build prompt input component
 - [ ] Add model selector UI (grid/cards)
@@ -92,6 +102,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Add download functionality
 
 ### 2.4 Image Storage & CDN
+
 - [ ] Implement S3 upload in processGeneration
 - [ ] Generate CloudFront URLs
 - [ ] Create signed URL generation for private images
@@ -102,9 +113,11 @@ Building a platform-agnostic AI image generation studio using:
 ---
 
 ## Phase 3: User Management & Billing (Week 5)
+
 **Priority: HIGH** - Required for revenue
 
 ### 3.1 User Account Management
+
 - [ ] Create user profile page
 - [ ] Display storage usage meter
 - [ ] Show credit balance
@@ -113,6 +126,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Add usage history view
 
 ### 3.2 Subscription & Billing (Stripe Recommended)
+
 - [ ] Set up Stripe account
 - [ ] Create Pro tier product ($29/month)
 - [ ] Create Enterprise tier product (custom)
@@ -124,6 +138,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Configure trial period (7 days)
 
 ### 3.3 Credit System
+
 - [ ] Implement credit deduction on generation
 - [ ] Add credit purchase flow
 - [ ] Create credit top-up options
@@ -134,9 +149,11 @@ Building a platform-agnostic AI image generation studio using:
 ---
 
 ## Phase 4: Gallery & Library (Week 6)
+
 **Priority: MEDIUM** - Enhances user experience
 
 ### 4.1 Image Gallery
+
 - [ ] Create gallery page with infinite scroll
 - [ ] Implement grid view layout
 - [ ] Add filter by model/date/tags
@@ -148,6 +165,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Create bulk delete with confirmation
 
 ### 4.2 Collections
+
 - [ ] Implement `createCollection` mutation
 - [ ] Build collections management UI
 - [ ] Add drag-and-drop to collections
@@ -157,6 +175,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Create collection invitation system (Enterprise)
 
 ### 4.3 Image Management
+
 - [ ] Implement `deleteImage` mutation with S3 cleanup
 - [ ] Add image editing metadata
 - [ ] Create tagging system
@@ -167,9 +186,11 @@ Building a platform-agnostic AI image generation studio using:
 ---
 
 ## Phase 5: API & Developer Features (Week 7)
+
 **Priority: MEDIUM** - For Pro/Enterprise users
 
 ### 5.1 API Key Management
+
 - [ ] Implement `createApiKey` mutation
 - [ ] Add API key hashing and storage
 - [ ] Build API keys management UI
@@ -179,6 +200,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Add last-used timestamp display
 
 ### 5.2 REST API Endpoints
+
 - [ ] Create `/api/v1/generate` endpoint
 - [ ] Add `/api/v1/status/:jobId` endpoint
 - [ ] Implement `/api/v1/images` listing
@@ -189,6 +211,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Create API documentation (OpenAPI/Swagger)
 
 ### 5.3 Webhooks
+
 - [ ] Implement webhook registration
 - [ ] Add webhook signature verification
 - [ ] Create webhook event system
@@ -200,9 +223,11 @@ Building a platform-agnostic AI image generation studio using:
 ---
 
 ## Phase 6: Monitoring & Operations (Week 8)
+
 **Priority: MEDIUM** - Production readiness
 
 ### 6.1 AWS CloudWatch Setup
+
 - [ ] Configure CloudWatch custom metrics
 - [ ] Implement metric logging (generations, errors)
 - [ ] Create CloudWatch dashboard
@@ -212,6 +237,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Implement log retention policies
 
 ### 6.2 Error Tracking (Sentry)
+
 - [ ] Set up Sentry project
 - [ ] Integrate Sentry in Next.js
 - [ ] Add Sentry to Convex actions
@@ -220,6 +246,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Create error assignment workflow
 
 ### 6.3 Analytics (PostHog)
+
 - [ ] Set up PostHog project
 - [ ] Integrate PostHog in frontend
 - [ ] Define key events to track
@@ -229,6 +256,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Build analytics dashboard
 
 ### 6.4 Performance Monitoring
+
 - [ ] Add performance markers
 - [ ] Implement Core Web Vitals tracking
 - [ ] Monitor API response times
@@ -239,9 +267,11 @@ Building a platform-agnostic AI image generation studio using:
 ---
 
 ## Phase 7: Security & Compliance (Week 9)
+
 **Priority: HIGH** - Required for production
 
 ### 7.1 Security Hardening
+
 - [ ] Implement rate limiting (per-user, per-IP)
 - [ ] Add CSRF protection
 - [ ] Configure security headers (CSP, HSTS, etc.)
@@ -251,6 +281,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Add DDoS protection (Cloudflare/AWS Shield)
 
 ### 7.2 Content Moderation
+
 - [ ] Integrate OpenAI Moderation API
 - [ ] Implement prompt filtering
 - [ ] Add image content moderation (AWS Rekognition)
@@ -260,6 +291,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Implement user reporting
 
 ### 7.3 Privacy & Compliance
+
 - [ ] Add privacy policy page
 - [ ] Create terms of service
 - [ ] Implement GDPR data export
@@ -271,9 +303,11 @@ Building a platform-agnostic AI image generation studio using:
 ---
 
 ## Phase 8: Testing & Quality Assurance (Week 10)
+
 **Priority: HIGH** - Production readiness
 
 ### 8.1 Unit Tests
+
 - [ ] Set up Jest + React Testing Library
 - [ ] Write tests for components (>80% coverage)
 - [ ] Test Convex queries/mutations
@@ -283,6 +317,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Configure test coverage reporting
 
 ### 8.2 Integration Tests
+
 - [ ] Test Clerk authentication flow
 - [ ] Test S3 upload/download
 - [ ] Test CloudFront signed URLs
@@ -291,6 +326,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Test email sending (AWS SES)
 
 ### 8.3 E2E Tests (Playwright)
+
 - [ ] Set up Playwright
 - [ ] Test signup/login flow
 - [ ] Test image generation flow
@@ -302,9 +338,11 @@ Building a platform-agnostic AI image generation studio using:
 ---
 
 ## Phase 9: UI/UX Polish (Week 11)
+
 **Priority: MEDIUM** - User experience
 
 ### 9.1 Design System
+
 - [ ] Define color palette
 - [ ] Create typography scale
 - [ ] Build component library (buttons, inputs, cards)
@@ -315,6 +353,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Implement dark mode
 
 ### 9.2 Responsive Design
+
 - [ ] Optimize for mobile (320px+)
 - [ ] Test tablet layouts (768px+)
 - [ ] Ensure desktop experience (1024px+)
@@ -322,6 +361,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Test on various devices
 
 ### 9.3 Accessibility
+
 - [ ] Add ARIA labels
 - [ ] Ensure keyboard navigation
 - [ ] Test with screen readers
@@ -333,9 +373,11 @@ Building a platform-agnostic AI image generation studio using:
 ---
 
 ## Phase 10: Advanced Features (Week 12+)
+
 **Priority: LOW** - Future enhancements
 
 ### 10.1 Advanced Generation Features
+
 - [ ] Add batch generation
 - [ ] Implement model comparison (side-by-side)
 - [ ] Add custom presets
@@ -345,6 +387,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Add seed locking for consistency
 
 ### 10.2 Collaboration (Enterprise)
+
 - [ ] Create team workspace schema
 - [ ] Implement team member invitations
 - [ ] Add role-based permissions
@@ -354,6 +397,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Create team usage dashboard
 
 ### 10.3 Phase 2 Features (Image Editing)
+
 - [ ] Research image editing APIs
 - [ ] Implement inpainting
 - [ ] Add outpainting
@@ -365,9 +409,11 @@ Building a platform-agnostic AI image generation studio using:
 ---
 
 ## Phase 11: Marketing & Launch Prep (Week 13)
+
 **Priority: MEDIUM** - Go-to-market
 
 ### 11.1 Landing Page
+
 - [ ] Design landing page
 - [ ] Add hero section with demo
 - [ ] Create features showcase
@@ -377,6 +423,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Create FAQ section
 
 ### 11.2 Documentation
+
 - [ ] Write API documentation
 - [ ] Create getting started guide
 - [ ] Add video tutorials
@@ -386,6 +433,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Create changelog
 
 ### 11.3 Marketing Assets
+
 - [ ] Create brand guidelines
 - [ ] Design social media graphics
 - [ ] Record product demo video
@@ -396,9 +444,11 @@ Building a platform-agnostic AI image generation studio using:
 ---
 
 ## Phase 12: Deployment & Launch (Week 14)
+
 **Priority: CRITICAL** - Production launch
 
 ### 12.1 Production Deployment
+
 - [ ] Configure Vercel production environment
 - [ ] Set up production Convex deployment
 - [ ] Configure production AWS resources
@@ -408,6 +458,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Create deployment runbook
 
 ### 12.2 CI/CD Pipeline
+
 - [ ] Set up GitHub Actions
 - [ ] Configure automated tests
 - [ ] Add build optimization
@@ -417,6 +468,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Create rollback procedures
 
 ### 12.3 Monitoring & Alerts
+
 - [ ] Configure production alerts
 - [ ] Set up on-call rotation
 - [ ] Create incident response plan
@@ -426,6 +478,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Create operational dashboard
 
 ### 12.4 Launch Checklist
+
 - [ ] Load testing (simulate 1000 concurrent users)
 - [ ] Security audit
 - [ ] Performance optimization
@@ -440,24 +493,27 @@ Building a platform-agnostic AI image generation studio using:
 ## Dependencies & Risks
 
 ### Critical Path
+
 1. AWS Infrastructure → Backend Setup → Generation Feature → Billing → Launch
 2. Any delay in AWS setup blocks all storage features
 3. Billing integration required before public launch
 
 ### Key Risks
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| OpenRouter API downtime | High | Implement circuit breaker, retry logic |
+
+| Risk                    | Impact | Mitigation                              |
+| ----------------------- | ------ | --------------------------------------- |
+| OpenRouter API downtime | High   | Implement circuit breaker, retry logic  |
 | AWS costs exceed budget | Medium | Set up billing alerts, implement quotas |
-| Clerk service outage | High | Implement graceful degradation |
-| S3 upload failures | High | Retry logic, queue system |
-| Credit card fraud | Medium | Stripe Radar, manual review queue |
+| Clerk service outage    | High   | Implement graceful degradation          |
+| S3 upload failures      | High   | Retry logic, queue system               |
+| Credit card fraud       | Medium | Stripe Radar, manual review queue       |
 
 ---
 
 ## Resource Requirements
 
 ### Team Size (Recommended)
+
 - 1 Full-stack Engineer (Phase 1-4, 6-12)
 - 1 Backend Engineer (Phase 2-3, 5)
 - 1 Frontend Engineer (Phase 4, 9)
@@ -465,11 +521,13 @@ Building a platform-agnostic AI image generation studio using:
 - 1 QA Engineer (Phase 8)
 
 ### Estimated Timeline
+
 - **MVP (Phases 1-3, 8, 12)**: 6-8 weeks
 - **Full Launch (All Phases)**: 12-14 weeks
 - **Solo Developer**: 20-24 weeks
 
 ### Monthly Costs (Estimated)
+
 - **Development**:
   - Vercel: $20
   - Convex: $25
@@ -493,6 +551,7 @@ Building a platform-agnostic AI image generation studio using:
 ## Success Metrics
 
 ### MVP Launch (Week 8)
+
 - [ ] 10 beta users generating images
 - [ ] 100+ images generated successfully
 - [ ] <1% error rate
@@ -500,6 +559,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] 0 critical bugs
 
 ### Public Launch (Week 14)
+
 - [ ] 100+ registered users
 - [ ] 50+ paid subscribers
 - [ ] 1000+ images generated
@@ -507,6 +567,7 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] <2s page load time (p95)
 
 ### 3 Months Post-Launch
+
 - [ ] 500+ paid subscribers
 - [ ] $15,000+ MRR
 - [ ] 10,000+ images generated
@@ -518,6 +579,7 @@ Building a platform-agnostic AI image generation studio using:
 ## Notes
 
 **Priority Levels:**
+
 - **CRITICAL**: Blocks launch, must complete
 - **HIGH**: Important for MVP quality
 - **MEDIUM**: Enhances experience, can be post-launch

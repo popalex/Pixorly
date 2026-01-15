@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
+    env_file:
+      - .env.local
+    command: pnpm dev
+    restart: unless-stopped
+    networks:
+      - pixorly-network
+
+  # Placeholder for Convex service (will be added later)
+  # convex:
+  #   image: node:20-alpine
+  #   working_dir: /app
+  #   volumes:
+  #     - ./convex:/app/convex
+  #     - ./package.json:/app/package.json
+  #   environment:
+  #     - CONVEX_DEPLOYMENT=${CONVEX_DEPLOYMENT}
+  #   command: npx convex dev
+  #   networks:
+  #     - pixorly-network
+
+networks:
+  pixorly-network:
+    driver: bridge
+    name: pixorly-network
