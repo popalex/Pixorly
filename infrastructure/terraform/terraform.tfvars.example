@@ -1,0 +1,29 @@
+# Example terraform.tfvars configuration
+# Copy this file to terraform.tfvars and customize for your environment
+
+# AWS region for all resources
+aws_region = "us-east-1"
+
+# Environment name (dev, staging, prod)
+environment = "prod"
+
+# Project name used for resource naming
+project_name = "pixorly"
+
+# S3 bucket name for image storage (must be globally unique)
+# Tip: Add a random suffix or your organization name
+s3_bucket_name = "pixorly-images-prod-12345"
+
+# Number of days before transitioning to Glacier storage
+glacier_transition_days = 90
+
+# CloudFront price class
+# Options: PriceClass_100 (US, Canada, Europe), PriceClass_200 (add Asia), PriceClass_All
+cloudfront_price_class = "PriceClass_100"
+
+# Allowed CORS origins for S3 bucket
+allowed_cors_origins = [
+  "https://pixorly.com",
+  "https://www.pixorly.com",
+  "http://localhost:3000" # For local development
+]

@@ -1,0 +1,16 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+.terraform/
+.terraform.lock.hcl
+terraform-outputs.json
+tfplan
+
+# CloudFront Keys
+cloudfront-private-key.pem
+cloudfront-public-key.pem
+
+# Scripts temp files
+*.tmp

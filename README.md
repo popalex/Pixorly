@@ -15,6 +15,7 @@
 - [Full Specification](SPEC.md)
 - [Implementation Plan](IMPLEMENTATION_PLAN.md)
 - [Technical Decisions](DECISIONS.md)
+- [AWS Infrastructure Setup](infrastructure/README.md) - Terraform IaC for S3, CloudFront, IAM, etc.
 
 ## 🛠️ Tech Stack
 
@@ -54,7 +55,16 @@
    # Edit .env.local with your API keys
    ```
 
-4. **Run development server**
+4. **Set up AWS infrastructure** (required for image storage)
+
+   See [infrastructure/README.md](infrastructure/README.md) for complete setup guide:
+
+   ```bash
+   cd infrastructure/scripts
+   ./setup.sh
+   ```
+
+5. **Run development server**
 
    ```bash
    pnpm dev

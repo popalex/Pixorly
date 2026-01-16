@@ -35,14 +35,14 @@ Building a platform-agnostic AI image generation studio using:
 
 ### 1.2 AWS Infrastructure
 
-- [ ] Create AWS account and configure IAM users
-- [ ] Set up S3 bucket (`pixorly-images-prod`) with versioning
-- [ ] Configure S3 lifecycle policies (Glacier after 90 days)
-- [ ] Create CloudFront distribution with OAI
-- [ ] Generate CloudFront key pair for signed URLs
-- [ ] Configure AWS Secrets Manager for credentials
-- [ ] Set up CloudWatch log groups
-- [ ] Create IAM policies for application access
+- [x] Create AWS account and configure IAM users
+- [x] Set up S3 bucket (`pixorly-images-prod`) with versioning
+- [x] Configure S3 lifecycle policies (Glacier after 90 days)
+- [x] Create CloudFront distribution with OAI
+- [x] Generate CloudFront key pair for signed URLs
+- [x] Configure AWS Secrets Manager for credentials
+- [x] Set up CloudWatch log groups
+- [x] Create IAM policies for application access
 
 ### 1.3 Convex Backend Setup
 
