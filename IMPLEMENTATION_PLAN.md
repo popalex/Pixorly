@@ -46,12 +46,12 @@ Building a platform-agnostic AI image generation studio using:
 
 ### 1.3 Convex Backend Setup
 
-- [ ] Initialize Convex project
-- [ ] Define database schema (users, images, generationJobs, collections, apiKeys, usage)
-- [ ] Set up Convex development environment
-- [ ] Configure Convex authentication with Clerk
-- [ ] Create database indexes for performance
-- [ ] Set up Convex file storage (optional backup)
+- [x] Initialize Convex project
+- [x] Define database schema (users, images, generationJobs, collections, apiKeys, usage)
+- [x] Set up Convex development environment
+- [x] Configure Convex authentication with Clerk
+- [x] Create database indexes for performance
+- [x] Set up Convex file storage (optional backup)
 
 ### 1.4 Authentication (Clerk)
 

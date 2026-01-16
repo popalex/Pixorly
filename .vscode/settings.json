@@ -36,5 +36,7 @@
   },
   "editor.quickSuggestions": {
     "strings": "on"
-  }
+  },
+  "python-envs.defaultEnvManager": "ms-python.python:system",
+  "python-envs.pythonProjects": []
 }

@@ -67,6 +67,10 @@ web_modules/
 .env.production.local
 !.env.example
 
+# Convex
+.convex/
+convex/_generated/
+
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
