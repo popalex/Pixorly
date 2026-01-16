@@ -71,12 +71,14 @@ Building a platform-agnostic AI image generation studio using:
 
 ### 2.0 Model Provider Abstraction (Lightweight)
 
-- [ ] Create minimal ModelProvider interface (generate, getModels, calculateCost)
-- [ ] Define basic GenerationRequest/Response types
-- [ ] Add simple error wrapper (ProviderError)
-- [ ] Skip over-engineering - evolve as needed
+- [x] Create minimal ModelProvider interface (generate, getModels, calculateCost)
+- [x] Define basic GenerationRequest/Response types
+- [x] Add simple error wrapper (ProviderError)
+- [x] Skip over-engineering - evolve as needed
 
 **Note**: Keep this thin. Implement OpenRouter first, then refine the interface based on real usage patterns.
+
+**Implementation**: Created in `lib/ai/` with provider interface, type definitions, error handling, and provider registry.
 
 ### 2.1 OpenRouter Integration
 
