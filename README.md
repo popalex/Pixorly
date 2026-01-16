@@ -7,8 +7,26 @@
 - **Multi-Model Support**: Generate images using DALL-E, Stable Diffusion, Midjourney, and more via OpenRouter
 - **Real-Time Updates**: Live status tracking for generation jobs powered by Convex
 - **Scalable Storage**: AWS S3 + CloudFront for global image delivery
-- **Developer API**: REST API for programmatic access
+- **Secure Authentication**: Clerk-powered auth with JWT verification and Convex integration
+- **Developer API**: REST API for programmatic access (coming in Phase 5)
 - **Modern Stack**: Next.js 15 (App Router) + TypeScript + Tailwind CSS
+
+## 🎯 Current Status
+
+**Phase 1 Complete** ✅
+
+- ✅ Next.js 15 with TypeScript and Tailwind CSS
+- ✅ AWS Infrastructure (S3, CloudFront, IAM)
+- ✅ Convex backend with real-time subscriptions
+- ✅ Clerk authentication with user management
+- ✅ Protected routes and middleware
+- ✅ User sync to Convex via webhooks
+
+**Next: Phase 2** - Core Image Generation
+
+- OpenRouter integration
+- Generation backend
+- Generation UI
 
 ## 📋 Documentation
 
@@ -55,7 +73,25 @@
    # Edit .env.local with your API keys
    ```
 
-4. **Set up AWS infrastructure** (required for image storage)
+4. **Set up Convex**
+
+   ```bash
+   npx convex dev
+   ```
+
+   This will create your Convex project and populate `CONVEX_DEPLOYMENT` and `NEXT_PUBLIC_CONVEX_URL` in `.env.local`.
+
+5. **Set up Clerk authentication**
+
+   See [Clerk Setup Guide](docs/CLERK_SETUP.md) for detailed instructions:
+   - Create Clerk account at https://dashboard.clerk.com
+   - Copy API keys to `.env.local`
+   - Configure webhooks for user sync
+   - Set JWT issuer in Convex
+
+   Quick checklist: [Setup Checklist](docs/SETUP_CHECKLIST_PHASE_1.4.md)
+
+6. **Set up AWS infrastructure** (required for image storage)
 
    See [infrastructure/README.md](infrastructure/README.md) for complete setup guide:
 
@@ -64,7 +100,7 @@
    ./setup.sh
    ```
 
-5. **Run development server**
+7. **Run development server**
 
    ```bash
    pnpm dev
@@ -132,6 +168,15 @@ Contributions are welcome! Please read our contributing guidelines before submit
 
 ---
 
-**Status**: 🚧 In Development
+**Status**: � Phase 1 Complete - Authentication & Infrastructure Ready
 
-**Current Phase**: Phase 1 - Core Infrastructure Setup
+**Current Phase**: Phase 2 - Core Image Generation
+
+**Completed**:
+
+- ✅ Phase 1.1: Repository & Development Environment
+- ✅ Phase 1.2: AWS Infrastructure (S3, CloudFront, IAM)
+- ✅ Phase 1.3: Convex Backend Setup
+- ✅ Phase 1.4: Authentication (Clerk)
+
+**See**: [Implementation Progress](IMPLEMENTATION_PLAN.md)

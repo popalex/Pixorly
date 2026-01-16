@@ -55,13 +55,13 @@ Building a platform-agnostic AI image generation studio using:
 
 ### 1.4 Authentication (Clerk)
 
-- [ ] Create Clerk application
-- [ ] Configure Clerk in Next.js middleware
-- [ ] Set up Clerk webhooks for user sync to Convex
-- [ ] Implement user creation flow
-- [ ] Add sign-up/sign-in UI components
-- [ ] Configure session management
-- [ ] Set up protected routes
+- [x] Create Clerk application
+- [x] Configure Clerk in Next.js middleware
+- [x] Set up Clerk webhooks for user sync to Convex
+- [x] Implement user creation flow
+- [x] Add sign-up/sign-in UI components
+- [x] Configure session management
+- [x] Set up protected routes
 
 ---
 
