@@ -15,7 +15,7 @@ Building a platform-agnostic AI image generation studio using:
 - **Backend**: Convex (serverless) + TypeScript
 - **Storage**: AWS S3 + CloudFront CDN
 - **Auth**: Clerk
-- **AI**: OpenRouter (multi-model support)
+- **AI**: ModelProvider abstraction (OpenRouter initially, Replicate as alternative)
 
 ---
 
@@ -69,6 +69,15 @@ Building a platform-agnostic AI image generation studio using:
 
 **Priority: HIGH** - MVP feature
 
+### 2.0 Model Provider Abstraction (Lightweight)
+
+- [ ] Create minimal ModelProvider interface (generate, getModels, calculateCost)
+- [ ] Define basic GenerationRequest/Response types
+- [ ] Add simple error wrapper (ProviderError)
+- [ ] Skip over-engineering - evolve as needed
+
+**Note**: Keep this thin. Implement OpenRouter first, then refine the interface based on real usage patterns.
+
 ### 2.1 OpenRouter Integration
 
 - [ ] Create OpenRouter account and get API key
@@ -109,6 +118,20 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Add image metadata storage
 - [ ] Implement lazy loading with placeholders
 - [ ] Add image optimization hooks
+
+### 2.5 Replicate Integration (Alternative Provider)
+
+- [ ] Create Replicate account and get API key
+- [ ] Implement ReplicateProvider class (implements ModelProvider)
+- [ ] Add model configuration (SDXL, Flux, SD3, etc.)
+- [ ] Map Replicate-specific parameters to common interface
+- [ ] Implement webhook handling for async generation
+- [ ] Add prediction status polling logic
+- [ ] Create cost calculation for pay-per-second pricing
+- [ ] Add model version management
+- [ ] Implement error handling for Replicate-specific errors
+- [ ] Add performance metrics tracking
+- [ ] Document migration path from OpenRouter to Replicate
 
 ---
 
@@ -312,7 +335,9 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Write tests for components (>80% coverage)
 - [ ] Test Convex queries/mutations
 - [ ] Add utility function tests
+- [ ] Test ModelProvider interface implementations
 - [ ] Test OpenRouter client
+- [ ] Test Replicate client (if implemented)
 - [ ] Test credit calculation logic
 - [ ] Configure test coverage reporting
 
@@ -323,6 +348,8 @@ Building a platform-agnostic AI image generation studio using:
 - [ ] Test CloudFront signed URLs
 - [ ] Test Stripe webhook handling
 - [ ] Test OpenRouter API integration
+- [ ] Test Replicate API integration (if implemented)
+- [ ] Test provider switching logic
 - [ ] Test email sending (AWS SES)
 
 ### 8.3 E2E Tests (Playwright)
@@ -500,13 +527,13 @@ Building a platform-agnostic AI image generation studio using:
 
 ### Key Risks
 
-| Risk                    | Impact | Mitigation                              |
-| ----------------------- | ------ | --------------------------------------- |
-| OpenRouter API downtime | High   | Implement circuit breaker, retry logic  |
-| AWS costs exceed budget | Medium | Set up billing alerts, implement quotas |
-| Clerk service outage    | High   | Implement graceful degradation          |
-| S3 upload failures      | High   | Retry logic, queue system               |
-| Credit card fraud       | Medium | Stripe Radar, manual review queue       |
+| Risk                     | Impact | Mitigation                                                            |
+| ------------------------ | ------ | --------------------------------------------------------------------- |
+| AI Provider API downtime | High   | Provider abstraction, circuit breaker, retry logic, fallback provider |
+| AWS costs exceed budget  | Medium | Set up billing alerts, implement quotas                               |
+| Clerk service outage     | High   | Implement graceful degradation                                        |
+| S3 upload failures       | High   | Retry logic, queue system                                             |
+| Credit card fraud        | Medium | Stripe Radar, manual review queue                                     |
 
 ---
 
