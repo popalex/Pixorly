@@ -22,3 +22,6 @@ export { ProviderRegistry, providerRegistry } from "./provider";
 
 // Errors
 export { ProviderError } from "./errors";
+
+// OpenRouter Provider
+export * from "./providers";
