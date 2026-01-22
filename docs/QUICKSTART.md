@@ -47,7 +47,20 @@ CLERK_WEBHOOK_SECRET=whsec_...
 ### 4. Configure Convex
 
 ```bash
+# Clerk authentication
 npx convex env set CLERK_JWT_ISSUER_DOMAIN "https://your-app.clerk.accounts.dev"
+
+# AWS S3 & CloudFront (for Phase 2.2)
+npx convex env set AWS_REGION us-east-1
+npx convex env set AWS_ACCESS_KEY_ID your_key
+npx convex env set AWS_SECRET_ACCESS_KEY your_secret
+npx convex env set AWS_S3_BUCKET pixorly-images-prod
+npx convex env set AWS_CLOUDFRONT_DOMAIN d1234567890.cloudfront.net
+npx convex env set AWS_CLOUDFRONT_KEY_PAIR_ID APKAXXXXXXXXXX
+npx convex env set AWS_CLOUDFRONT_PRIVATE_KEY "-----BEGIN RSA PRIVATE KEY-----\n..."
+
+# OpenRouter (for Phase 2.1)
+npx convex env set OPENROUTER_API_KEY sk-or-v1-...
 ```
 
 ### 5. Start Dev Servers

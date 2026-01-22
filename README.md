@@ -30,7 +30,16 @@
 - ✅ Cost calculation utilities
 - ✅ Type-safe TypeScript implementation
 
-**Next: Phase 2.2** - Generation Backend (Convex)
+**Phase 2.2 Complete** ✅
+
+- ✅ Generation backend with job management
+- ✅ OpenRouter integration with S3 upload
+- ✅ Automatic retry with exponential backoff
+- ✅ Credit system and storage quotas
+- ✅ Real-time job status tracking
+- ⚠️ **Requires Node.js 18/20/22** (NOT 24)
+
+**Next: Phase 2.3** - Generation Frontend UI
 
 ## 📋 Documentation
 
@@ -51,7 +60,9 @@
 
 ### Prerequisites
 
-- Node.js 20+
+- **Node.js**: 18, 20, or 22 (⚠️ **NOT Node.js 24** - Convex requires v18/20/22)
+  - Use `nvm use 22` to switch to a compatible version
+  - Verify with `node --version`
 - pnpm 9+
 - Docker Desktop (optional)
 

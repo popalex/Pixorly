@@ -104,14 +104,39 @@ Building a platform-agnostic AI image generation studio using:
 
 ### 2.2 Generation Backend (Convex)
 
-- [ ] Implement `createGenerationJob` mutation
-- [ ] Create `processGeneration` action (calls OpenRouter)
-- [ ] Add S3 upload logic with AWS SDK
-- [ ] Implement storage quota checking
-- [ ] Create `completeGeneration` mutation
-- [ ] Add `updateStorageUsage` mutation
-- [ ] Implement job status tracking
-- [ ] Add error handling and failure recovery
+- [x] Implement `createGenerationJob` mutation
+- [x] Create `processGeneration` action (calls OpenRouter)
+- [x] Add S3 upload logic with AWS SDK
+- [x] Implement storage quota checking
+- [x] Create `completeGeneration` mutation
+- [x] Add `updateStorageUsage` mutation
+- [x] Implement job status tracking
+- [x] Add error handling and failure recovery
+
+**Implementation**: Complete generation backend in `convex/`:
+
+- `generations.ts` - Mutations and queries for job management
+  - `createGenerationJob` - Validates request, checks quotas, deducts credits, schedules processing
+  - `completeGeneration` - Marks job complete and updates stats
+  - `failGeneration` - Handles failures with optional credit refunds
+  - `updateStorageUsage` - Tracks user storage consumption
+  - `getGenerationJob` - Query job status
+  - `listGenerationJobs` - List user's generation history
+  - Internal helpers for actions
+- `generationActions.ts` - Action that orchestrates the full workflow
+  - `processGeneration` - Calls OpenRouter, downloads images, uploads to S3, creates records
+  - Automatic retry with exponential backoff (max 3 retries)
+  - Error handling with credit refunds for server errors
+  - Progress tracking through job status updates
+- `storage.ts` - S3 and CloudFront utilities (simple, refactorable if needed)
+  - `uploadImage` - Upload to S3 with encryption
+  - `deleteImage` - Delete from S3
+  - `getCloudFrontUrl` - Generate CDN URLs
+  - `getSignedCloudFrontUrl` - Generate signed URLs for private images
+  - `downloadImageFromUrl` - Download from AI provider
+  - Storage quota helpers
+
+- `GENERATION_README.md` - Complete documentation with architecture, usage examples, and monitoring
 
 ### 2.3 Generation Frontend
 
