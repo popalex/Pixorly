@@ -3,12 +3,32 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useUser, useAuth } from "@clerk/nextjs";
 
 export default function TestGenerationPage() {
+  const { user, isLoaded } = useUser();
+  const auth = useAuth();
   const [prompt, setPrompt] = useState("A serene mountain landscape at sunset");
-  const [model, setModel] = useState("openai/dall-e-3");
+  const [model, setModel] = useState("flux-klein");
+
+  // Debug auth state
+  useEffect(() => {
+    console.log("Clerk auth state:", {
+      isLoaded,
+      userId: user?.id,
+      getToken: typeof auth.getToken,
+    });
+
+    // Try to get token
+    if (isLoaded && user) {
+      auth.getToken().then((token) => {
+        console.log("Clerk token exists:", !!token);
+        console.log("Token length:", token?.length);
+      });
+    }
+  }, [isLoaded, user, auth]);
 
   // Check configuration
   const config = useQuery(api.test.queries.checkConfig);
@@ -16,6 +36,7 @@ export default function TestGenerationPage() {
 
   // Generation mutation
   const createJob = useMutation(api.generations.createGenerationJob);
+  const resetCredits = useMutation(api.test.mutations.resetCredits);
   const [jobId, setJobId] = useState<Id<"generationJobs"> | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,6 +46,10 @@ export default function TestGenerationPage() {
   const handleGenerate = async () => {
     try {
       setError(null);
+      console.log("About to call mutation, auth state:", {
+        isLoaded,
+        userId: user?.id,
+      });
       const result = await createJob({
         prompt,
         model,
@@ -33,6 +58,7 @@ export default function TestGenerationPage() {
       });
       setJobId(result.jobId);
     } catch (err) {
+      console.error("Mutation error:", err);
       setError(err instanceof Error ? err.message : "Unknown error");
     }
   };
@@ -40,27 +66,46 @@ export default function TestGenerationPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="mx-auto max-w-4xl space-y-6">
-        <h1 className="text-3xl font-bold">Generation Backend Test</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Generation Backend Test</h1>
+
+        {/* Auth Status */}
+        <div className="rounded-lg bg-white p-6 shadow">
+          <h2 className="mb-4 text-xl font-semibold text-gray-900">Auth Status</h2>
+          <div className="space-y-2 text-sm text-gray-700">
+            <div>Clerk Loaded: {isLoaded ? "✅" : "❌"}</div>
+            <div>User Logged In: {user ? "✅" : "❌"}</div>
+            {user && (
+              <>
+                <div>User ID: {user.id}</div>
+                <div>Email: {user.primaryEmailAddress?.emailAddress}</div>
+              </>
+            )}
+            <button
+              onClick={() => resetCredits({ amount: 100 })}
+              className="mt-3 rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+            >
+              Reset Credits to 100
+            </button>
+          </div>
+        </div>
 
         {/* Configuration Check */}
         <div className="rounded-lg bg-white p-6 shadow">
-          <h2 className="mb-4 text-xl font-semibold">Configuration Status</h2>
+          <h2 className="mb-4 text-xl font-semibold text-gray-900">Configuration Status</h2>
           {config ? (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className={`text-2xl ${config.allConfigured ? "✅" : "⚠️"}`}>
-                  {config.allConfigured ? "✅" : "⚠️"}
-                </span>
-                <span className="font-medium">
+                <span className="text-2xl">{config.allConfigured ? "✅" : "⚠️"}</span>
+                <span className="font-medium text-gray-900">
                   {config.allConfigured ? "All configured!" : "Missing configuration"}
                 </span>
               </div>
 
-              <div className="space-y-1 pl-8 text-sm">
+              <div className="space-y-1 pl-8 text-sm text-gray-700">
                 <div>Users in DB: {config.database.users}</div>
                 <div>Jobs in DB: {config.database.jobs}</div>
-                <div className="pt-2 font-medium">Environment Variables:</div>
-                <div className="space-y-1 pl-4">
+                <div className="pt-2 font-medium text-gray-900">Environment Variables:</div>
+                <div className="space-y-1 pl-4 text-gray-700">
                   {Object.entries(config.environment).map(([key, value]) => (
                     <div key={key}>
                       {value ? "✅" : "❌"} {key}
@@ -70,13 +115,13 @@ export default function TestGenerationPage() {
               </div>
             </div>
           ) : (
-            <div>Loading...</div>
+            <div className="text-gray-600">Loading...</div>
           )}
         </div>
 
         {/* Sample User */}
         <div className="rounded-lg bg-white p-6 shadow">
-          <h2 className="mb-4 text-xl font-semibold">Sample User</h2>
+          <h2 className="mb-4 text-xl font-semibold text-gray-900">Sample User</h2>
           {sampleUser ? (
             "error" in sampleUser ? (
               <div className="text-amber-600">
@@ -90,7 +135,7 @@ export default function TestGenerationPage() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-1 text-sm">
+              <div className="space-y-1 text-sm text-gray-700">
                 <div>Email: {sampleUser.email}</div>
                 <div>Plan: {sampleUser.plan}</div>
                 <div>Credits: {sampleUser.credits}</div>
@@ -100,35 +145,34 @@ export default function TestGenerationPage() {
               </div>
             )
           ) : (
-            <div>Loading...</div>
+            <div className="text-gray-600">Loading...</div>
           )}
         </div>
 
         {/* Generation Test */}
         <div className="rounded-lg bg-white p-6 shadow">
-          <h2 className="mb-4 text-xl font-semibold">Test Generation</h2>
+          <h2 className="mb-4 text-xl font-semibold text-gray-900">Test Generation</h2>
 
           <div className="space-y-4">
             <div>
-              <label className="mb-2 block text-sm font-medium">Prompt</label>
+              <label className="mb-2 block text-sm font-medium text-gray-900">Prompt</label>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                className="w-full rounded-lg border p-3"
+                className="w-full rounded-lg border border-gray-300 p-3 text-gray-900"
                 rows={3}
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium">Model</label>
+              <label className="mb-2 block text-sm font-medium text-gray-900">Model</label>
               <select
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
-                className="w-full rounded-lg border p-3"
+                className="w-full rounded-lg border border-gray-300 p-3 text-gray-900"
               >
-                <option value="openai/dall-e-3">DALL-E 3</option>
-                <option value="stability-ai/sdxl">SDXL</option>
-                <option value="midjourney">Midjourney</option>
+                <option value="flux-klein">FLUX.2 Klein 4B (Fast & Cheap)</option>
+                <option value="riverflow-fast">Riverflow V2 Fast Preview</option>
               </select>
             </div>
 
@@ -151,11 +195,11 @@ export default function TestGenerationPage() {
         {/* Job Status */}
         {jobId && (
           <div className="rounded-lg bg-white p-6 shadow">
-            <h2 className="mb-4 text-xl font-semibold">Job Status</h2>
+            <h2 className="mb-4 text-xl font-semibold text-gray-900">Job Status</h2>
             {job ? (
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <span className="font-medium">Status:</span>
+                  <span className="font-medium text-gray-900">Status:</span>
                   <span
                     className={`rounded-full px-3 py-1 text-sm font-medium ${
                       job.status === "completed"
@@ -169,7 +213,7 @@ export default function TestGenerationPage() {
                   </span>
                 </div>
 
-                <div className="space-y-1 text-sm">
+                <div className="space-y-1 text-sm text-gray-700">
                   <div>Model: {job.model}</div>
                   <div>Credits Used: {job.creditsUsed}</div>
                   <div>Retry Count: {job.retryCount}</div>
@@ -192,7 +236,7 @@ export default function TestGenerationPage() {
                 )}
               </div>
             ) : (
-              <div>Loading job status...</div>
+              <div className="text-gray-600">Loading job status...</div>
             )}
           </div>
         )}

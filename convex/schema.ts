@@ -239,10 +239,9 @@ export default defineSchema({
     creditsUsed: v.number(),
 
     // Model usage breakdown
-    modelUsage: v.object({
-      // Model name -> count
-      // e.g., { "openai/dall-e-3": 10, "stability-ai/sdxl": 5 }
-    }),
+    modelUsage: v.record(v.string(), v.number()),
+    // Model name -> count
+    // e.g., { "openai/dall-e-3": 10, "stability-ai/sdxl": 5 }
 
     // Storage metrics
     storageUsedBytes: v.number(),

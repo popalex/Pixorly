@@ -21,6 +21,7 @@ Visit: https://dashboard.clerk.com
 
 - Sign up → Create Application → Name it "Pixorly"
 - Choose auth methods: Email + Google
+- add JWT Template named convex with template convex
 
 ### 2. Copy API Keys
 
@@ -51,10 +52,10 @@ CLERK_WEBHOOK_SECRET=whsec_...
 npx convex env set CLERK_JWT_ISSUER_DOMAIN "https://your-app.clerk.accounts.dev"
 
 # AWS S3 & CloudFront (for Phase 2.2)
-npx convex env set AWS_REGION us-east-1
+npx convex env set AWS_REGION eu-central-1
 npx convex env set AWS_ACCESS_KEY_ID your_key
 npx convex env set AWS_SECRET_ACCESS_KEY your_secret
-npx convex env set AWS_S3_BUCKET pixorly-images-prod
+npx convex env set AWS_S3_BUCKET pixorly-images-dev
 npx convex env set AWS_CLOUDFRONT_DOMAIN d1234567890.cloudfront.net
 npx convex env set AWS_CLOUDFRONT_KEY_PAIR_ID APKAXXXXXXXXXX
 npx convex env set AWS_CLOUDFRONT_PRIVATE_KEY "-----BEGIN RSA PRIVATE KEY-----\n..."
@@ -82,6 +83,7 @@ sudo tailscale funnel 3000
 2. Click "Get Started"
 3. Sign up with email
 4. You're in! 🎉
+5. Go to http://localhost:3000/test/generation
 
 ---
 

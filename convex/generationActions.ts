@@ -27,24 +27,53 @@ interface GeneratedImage {
 /**
  * AWS Configuration from environment variables
  */
-const AWS_CONFIG = {
-  region: process.env.AWS_REGION || "us-east-1",
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  s3Bucket: process.env.AWS_S3_BUCKET || "pixorly-images-prod",
-  cloudFrontDomain: process.env.AWS_CLOUDFRONT_DOMAIN!,
-};
+function getAwsConfig() {
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+  const cloudFrontDomain = process.env.AWS_CLOUDFRONT_DOMAIN;
+
+  // Validate required credentials
+  if (!accessKeyId) {
+    throw new Error("AWS_ACCESS_KEY_ID environment variable is not set");
+  }
+  if (!secretAccessKey) {
+    throw new Error("AWS_SECRET_ACCESS_KEY environment variable is not set");
+  }
+  if (!cloudFrontDomain) {
+    throw new Error("AWS_CLOUDFRONT_DOMAIN environment variable is not set");
+  }
+
+  // Trim any whitespace that might cause signature issues
+  return {
+    region: process.env.AWS_REGION?.trim() || "us-east-1",
+    accessKeyId: accessKeyId.trim(),
+    secretAccessKey: secretAccessKey.trim(),
+    s3Bucket: process.env.AWS_S3_BUCKET?.trim() || "pixorly-images-prod",
+    cloudFrontDomain: cloudFrontDomain.trim(),
+  };
+}
 
 /**
- * Initialize S3 client
+ * Initialize S3 client (lazy initialization to ensure env vars are available)
  */
-const s3Client = new S3Client({
-  region: AWS_CONFIG.region,
-  credentials: {
-    accessKeyId: AWS_CONFIG.accessKeyId,
-    secretAccessKey: AWS_CONFIG.secretAccessKey,
-  },
-});
+function getS3Client() {
+  const config = getAwsConfig();
+
+  console.log("S3 Client Configuration:", {
+    region: config.region,
+    bucket: config.s3Bucket,
+    accessKeyId: config.accessKeyId.substring(0, 4) + "...",
+    hasSecretKey: !!config.secretAccessKey,
+  });
+
+  return new S3Client({
+    region: config.region,
+    credentials: {
+      accessKeyId: config.accessKeyId,
+      secretAccessKey: config.secretAccessKey,
+    },
+  });
+}
 
 /**
  * Process a generation job
@@ -101,6 +130,14 @@ export const processGeneration = internalAction({
         prompt: job.prompt,
         model: job.model as any, // We're passing the string model ID
         userId: user.clerkId,
+        params: {
+          width: job.width,
+          height: job.height,
+          steps: job.steps,
+          guidanceScale: job.guidance,
+          seed: job.seed,
+          numOutputs: job.numImages,
+        },
       });
 
       // Convert provider response to our format
@@ -157,6 +194,10 @@ export const processGeneration = internalAction({
           console.log(`Uploading image ${i + 1} to S3...`);
           const uploadResult = await uploadImage(imageBuffer, s3Key, generatedImage.contentType);
 
+          console.log(`Image ${i + 1} uploaded to S3 successfully`);
+          console.log(
+            `Image ${i + 1} S3 Key: ${uploadResult.s3Key}, Bucket: ${uploadResult.s3Bucket}, Size: ${uploadResult.fileSizeBytes} bytes`
+          );
           // Generate CloudFront URL
           const cloudFrontUrl = getCloudFrontUrl(s3Key);
 
@@ -272,19 +313,32 @@ async function uploadImage(
   key: string,
   contentType: string = "image/png"
 ): Promise<{ s3Key: string; s3Bucket: string; fileSizeBytes: number }> {
+  const config = getAwsConfig();
+  const s3Client = getS3Client();
+
   const command = new PutObjectCommand({
-    Bucket: AWS_CONFIG.s3Bucket,
+    Bucket: config.s3Bucket,
     Key: key,
     Body: imageBuffer,
     ContentType: contentType,
     ServerSideEncryption: "AES256",
   });
 
-  await s3Client.send(command);
+  try {
+    await s3Client.send(command);
+  } catch (error) {
+    console.error("S3 Upload Error:", {
+      error: error instanceof Error ? error.message : String(error),
+      bucket: config.s3Bucket,
+      key,
+      region: config.region,
+    });
+    throw error;
+  }
 
   return {
     s3Key: key,
-    s3Bucket: AWS_CONFIG.s3Bucket,
+    s3Bucket: config.s3Bucket,
     fileSizeBytes: imageBuffer.length,
   };
 }
@@ -293,13 +347,26 @@ async function uploadImage(
  * Helper: Generate CloudFront URL
  */
 function getCloudFrontUrl(s3Key: string): string {
-  return `https://${AWS_CONFIG.cloudFrontDomain}/${s3Key}`;
+  const config = getAwsConfig();
+  return `https://${config.cloudFrontDomain}/${s3Key}`;
 }
 
 /**
- * Helper: Download image from URL
+ * Helper: Download image from URL or decode base64 data URL
  */
 async function downloadImageFromUrl(url: string): Promise<Buffer> {
+  // Check if it's a base64 data URL
+  if (url.startsWith("data:")) {
+    // Extract base64 data from data URL
+    // Format: data:image/png;base64,iVBORw0KG...
+    const base64Data = url.split(",")[1];
+    if (!base64Data) {
+      throw new Error("Invalid data URL format");
+    }
+    return Buffer.from(base64Data, "base64");
+  }
+
+  // Regular URL - fetch from network
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`Failed to download image: ${response.status} ${response.statusText}`);

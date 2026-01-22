@@ -31,6 +31,13 @@ interface OpenRouterResponse {
     message: {
       content: string;
       image_url?: string;
+      images?: Array<{
+        index: number;
+        type: string;
+        image_url: {
+          url: string;
+        };
+      }>;
     };
   }>;
   usage?: {
@@ -134,6 +141,40 @@ const MODEL_CONFIGS: Record<AIModel, ModelConfig | undefined> = {
     supportsSeed: false,
     avgGenerationTime: 15,
   },
+  [AIModel.FLUX_KLEIN]: {
+    openrouterId: "black-forest-labs/flux.2-klein-4b",
+    displayName: "FLUX.2 Klein 4B",
+    description: "Fast and cost-effective model optimized for high-throughput use cases",
+    costPerImage: 25, // 25 credits per image
+    costUSD: 0.01, // $0.01 per image
+    maxWidth: 2048,
+    maxHeight: 2048,
+    defaultParams: {
+      width: 1024,
+      height: 1024,
+      numOutputs: 1,
+    },
+    supportsNegativePrompt: false,
+    supportsSeed: false,
+    avgGenerationTime: 5,
+  },
+  [AIModel.RIVERFLOW_FAST]: {
+    openrouterId: "sourceful/riverflow-v2-fast-preview",
+    displayName: "Riverflow V2 Fast",
+    description: "Fast variant of Riverflow V2 for quick image generation",
+    costPerImage: 30, // 30 credits per image
+    costUSD: 0.03, // $0.03 per image
+    maxWidth: 2048,
+    maxHeight: 2048,
+    defaultParams: {
+      width: 1024,
+      height: 1024,
+      numOutputs: 1,
+    },
+    supportsNegativePrompt: false,
+    supportsSeed: false,
+    avgGenerationTime: 8,
+  },
   // Other models not supported by OpenRouter
   [AIModel.DALL_E_2]: undefined,
   [AIModel.SD_3]: undefined,
@@ -190,18 +231,29 @@ export class OpenRouterProvider implements ModelProvider {
     this.validateRequest(request);
 
     const config = MODEL_CONFIGS[request.model];
-    if (!config) {
-      throw new ProviderError(
-        `Model ${request.model} is not supported by OpenRouter`,
-        this.name,
-        "UNSUPPORTED_MODEL"
-      );
-    }
+    // If no config, use defaults for unknown models
+    const modelConfig = config || {
+      openrouterId: request.model as string, // Use the raw model ID
+      displayName: request.model as string,
+      description: "OpenRouter model",
+      costPerImage: 30, // Default cost
+      costUSD: 0.01,
+      maxWidth: 2048,
+      maxHeight: 2048,
+      defaultParams: {
+        width: 1024,
+        height: 1024,
+        numOutputs: 1,
+      },
+      supportsNegativePrompt: false,
+      supportsSeed: false,
+      avgGenerationTime: 10,
+    };
 
     const startTime = Date.now();
 
     try {
-      const response = await this.makeRequestWithRetry(request, config);
+      const response = await this.makeRequestWithRetry(request, modelConfig);
 
       const generationTime = (Date.now() - startTime) / 1000;
       const cost = await this.calculateCost(request);
@@ -345,8 +397,17 @@ export class OpenRouterProvider implements ModelProvider {
   private extractImageUrls(response: OpenRouterResponse): string[] {
     const urls: string[] = [];
 
+    console.log("OpenRouter response:", JSON.stringify(response, null, 2));
+
     for (const choice of response.choices) {
-      if (choice.message.image_url) {
+      // New format: images array with data URLs
+      if (choice.message.images && choice.message.images.length > 0) {
+        for (const img of choice.message.images) {
+          urls.push(img.image_url.url);
+        }
+      }
+      // Old format: direct image_url
+      else if (choice.message.image_url) {
         urls.push(choice.message.image_url);
       }
     }
@@ -392,16 +453,11 @@ export class OpenRouterProvider implements ModelProvider {
    */
   async calculateCost(request: GenerationRequest): Promise<CostEstimate> {
     const config = MODEL_CONFIGS[request.model];
-    if (!config) {
-      throw new ProviderError(
-        `Model ${request.model} is not supported by OpenRouter`,
-        this.name,
-        "UNSUPPORTED_MODEL"
-      );
-    }
 
+    // Use default cost for unknown models (like old raw OpenRouter IDs in DB)
+    const costPerImage = config?.costPerImage ?? 30; // Default 30 credits
     const numImages = request.params?.numOutputs ?? 1;
-    const baseCredits = config.costPerImage * numImages;
+    const baseCredits = costPerImage * numImages;
 
     // Apply resolution multiplier for larger images
     let resolutionMultiplier = 0;
@@ -448,34 +504,32 @@ export class OpenRouterProvider implements ModelProvider {
       );
     }
 
+    // Allow any model string - OpenRouter will validate
+    // This enables using new models without code changes
     const config = MODEL_CONFIGS[request.model];
-    if (!config) {
-      throw new ProviderError(
-        `Model ${request.model} is not supported by OpenRouter`,
-        this.name,
-        "UNSUPPORTED_MODEL"
-      );
-    }
 
-    // Validate dimensions
-    const params = request.params;
-    if (params?.width && params.width > config.maxWidth) {
-      throw new ProviderError(
-        `Width ${params.width} exceeds maximum ${config.maxWidth} for ${request.model}`,
-        this.name,
-        "INVALID_DIMENSIONS"
-      );
-    }
+    // Only validate dimensions if we have a config
+    if (config) {
+      const params = request.params;
+      if (params?.width && params.width > config.maxWidth) {
+        throw new ProviderError(
+          `Width ${params.width} exceeds maximum ${config.maxWidth} for ${request.model}`,
+          this.name,
+          "INVALID_DIMENSIONS"
+        );
+      }
 
-    if (params?.height && params.height > config.maxHeight) {
-      throw new ProviderError(
-        `Height ${params.height} exceeds maximum ${config.maxHeight} for ${request.model}`,
-        this.name,
-        "INVALID_DIMENSIONS"
-      );
+      if (params?.height && params.height > config.maxHeight) {
+        throw new ProviderError(
+          `Height ${params.height} exceeds maximum ${config.maxHeight} for ${request.model}`,
+          this.name,
+          "INVALID_DIMENSIONS"
+        );
+      }
     }
 
     // Validate num outputs
+    const params = request.params;
     if (params?.numOutputs && (params.numOutputs < 1 || params.numOutputs > 4)) {
       throw new ProviderError(
         "Number of outputs must be between 1 and 4",

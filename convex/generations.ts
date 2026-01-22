@@ -30,6 +30,7 @@ export const createGenerationJob = mutation({
   handler: async (ctx, args) => {
     // Get authenticated user
     const identity = await ctx.auth.getUserIdentity();
+    console.log("Auth identity:", identity);
     if (!identity) {
       throw new Error("Unauthorized: Must be logged in to generate images");
     }
@@ -40,6 +41,7 @@ export const createGenerationJob = mutation({
       .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
       .unique();
 
+    console.log("Found user:", user?._id);
     if (!user) {
       throw new Error("User not found");
     }

@@ -18,9 +18,13 @@ export enum AIModel {
   FLUX_SCHNELL = "flux-schnell",
   FLUX_DEV = "flux-dev",
   FLUX_PRO = "flux-pro",
+  FLUX_KLEIN = "flux-klein",
 
   // Midjourney (OpenRouter)
   MIDJOURNEY = "midjourney",
+
+  // Riverflow (OpenRouter)
+  RIVERFLOW_FAST = "riverflow-fast",
 }
 
 /**
