@@ -66,8 +66,8 @@ try {
   const fastest = getFastestModel();
   console.log(`   ✅ Fastest model: ${fastest}`);
 
-  const batchCost = calculateBatchCost(AIModel.SDXL, 10);
-  console.log(`   ✅ Batch cost (10 SDXL): ${batchCost.credits} credits ($${batchCost.usd})`);
+  const batchCost = calculateBatchCost(AIModel.FLUX_KLEIN, 10);
+  console.log(`   ✅ Batch cost (10 FLUX Klein): ${batchCost.credits} credits ($${batchCost.usd})`);
 } catch (error) {
   console.error(`   ❌ Utility function error:`, error);
 }
@@ -75,7 +75,7 @@ try {
 // Test 4: Model Comparison
 console.log("\n4️⃣  Comparing models...");
 try {
-  const comparison = compareModels([AIModel.DALL_E_3, AIModel.SDXL, AIModel.MIDJOURNEY]);
+  const comparison = compareModels([AIModel.FLUX_PRO, AIModel.FLUX_KLEIN, AIModel.RIVERFLOW_FAST]);
   console.log(`   ✅ Comparison data:`);
   comparison.forEach((model) => {
     if (model) {

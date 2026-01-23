@@ -88,31 +88,14 @@ interface ModelConfig {
  * Model configurations for OpenRouter
  */
 const MODEL_CONFIGS: Record<AIModel, ModelConfig | undefined> = {
-  [AIModel.DALL_E_3]: {
-    openrouterId: "openai/dall-e-3",
-    displayName: "DALL-E 3",
-    description: "OpenAI's most advanced image generation model with photorealistic results",
-    costPerImage: 100, // 100 credits per image
-    costUSD: 0.04, // $0.04 per image (1024x1024)
-    maxWidth: 1792,
-    maxHeight: 1792,
-    defaultParams: {
-      width: 1024,
-      height: 1024,
-      numOutputs: 1,
-    },
-    supportsNegativePrompt: false,
-    supportsSeed: false,
-    avgGenerationTime: 10,
-  },
-  [AIModel.SDXL]: {
-    openrouterId: "stability-ai/sdxl",
-    displayName: "Stable Diffusion XL",
-    description: "High-quality open-source image generation with fine control",
-    costPerImage: 30, // 30 credits per image
-    costUSD: 0.012, // $0.012 per image
-    maxWidth: 1024,
-    maxHeight: 1024,
+  [AIModel.FLUX_PRO]: {
+    openrouterId: "black-forest-labs/flux.2-pro",
+    displayName: "FLUX.2 Pro",
+    description: "Black Forest Labs premium model with highest quality",
+    costPerImage: 100,
+    costUSD: 0.04,
+    maxWidth: 2048,
+    maxHeight: 2048,
     defaultParams: {
       width: 1024,
       height: 1024,
@@ -122,65 +105,141 @@ const MODEL_CONFIGS: Record<AIModel, ModelConfig | undefined> = {
     },
     supportsNegativePrompt: true,
     supportsSeed: true,
-    avgGenerationTime: 8,
+    avgGenerationTime: 25,
   },
-  [AIModel.MIDJOURNEY]: {
-    openrouterId: "midjourney/v6",
-    displayName: "Midjourney v6",
-    description: "Artistic and creative image generation with stunning aesthetics",
-    costPerImage: 150, // 150 credits per image
-    costUSD: 0.06, // $0.06 per image
+  [AIModel.FLUX_MAX]: {
+    openrouterId: "black-forest-labs/flux.2-max",
+    displayName: "FLUX.2 Max",
+    description: "Maximum quality model for professional work",
+    costPerImage: 120,
+    costUSD: 0.05,
     maxWidth: 2048,
     maxHeight: 2048,
     defaultParams: {
       width: 1024,
       height: 1024,
+      steps: 35,
+      guidanceScale: 8.0,
       numOutputs: 1,
     },
     supportsNegativePrompt: true,
-    supportsSeed: false,
-    avgGenerationTime: 15,
+    supportsSeed: true,
+    avgGenerationTime: 30,
+  },
+  [AIModel.FLUX_FLEX]: {
+    openrouterId: "black-forest-labs/flux.2-flex",
+    displayName: "FLUX.2 Flex",
+    description: "Flexible model with balanced quality and speed",
+    costPerImage: 80,
+    costUSD: 0.03,
+    maxWidth: 2048,
+    maxHeight: 2048,
+    defaultParams: {
+      width: 1024,
+      height: 1024,
+      steps: 25,
+      guidanceScale: 7.0,
+      numOutputs: 1,
+    },
+    supportsNegativePrompt: true,
+    supportsSeed: true,
+    avgGenerationTime: 18,
   },
   [AIModel.FLUX_KLEIN]: {
     openrouterId: "black-forest-labs/flux.2-klein-4b",
     displayName: "FLUX.2 Klein 4B",
-    description: "Fast and cost-effective model optimized for high-throughput use cases",
-    costPerImage: 25, // 25 credits per image
-    costUSD: 0.01, // $0.01 per image
+    description: "Fast 4B parameter model with excellent quality",
+    costPerImage: 40,
+    costUSD: 0.015,
     maxWidth: 2048,
     maxHeight: 2048,
     defaultParams: {
       width: 1024,
       height: 1024,
+      steps: 20,
+      guidanceScale: 7.0,
       numOutputs: 1,
     },
-    supportsNegativePrompt: false,
-    supportsSeed: false,
-    avgGenerationTime: 5,
+    supportsNegativePrompt: true,
+    supportsSeed: true,
+    avgGenerationTime: 10,
   },
   [AIModel.RIVERFLOW_FAST]: {
     openrouterId: "sourceful/riverflow-v2-fast-preview",
     displayName: "Riverflow V2 Fast",
-    description: "Fast variant of Riverflow V2 for quick image generation",
-    costPerImage: 30, // 30 credits per image
-    costUSD: 0.03, // $0.03 per image
-    maxWidth: 2048,
-    maxHeight: 2048,
+    description: "Sourceful's fast image generation model",
+    costPerImage: 30,
+    costUSD: 0.01,
+    maxWidth: 1024,
+    maxHeight: 1024,
     defaultParams: {
       width: 1024,
       height: 1024,
+      steps: 20,
+      guidanceScale: 7.0,
       numOutputs: 1,
     },
-    supportsNegativePrompt: false,
-    supportsSeed: false,
+    supportsNegativePrompt: true,
+    supportsSeed: true,
     avgGenerationTime: 8,
   },
-  // Other models not supported by OpenRouter
-  [AIModel.DALL_E_2]: undefined,
-  [AIModel.SD_3]: undefined,
-  [AIModel.FLUX_SCHNELL]: undefined,
-  [AIModel.FLUX_DEV]: undefined,
-  [AIModel.FLUX_PRO]: undefined,
+  [AIModel.RIVERFLOW_STANDARD]: {
+    openrouterId: "sourceful/riverflow-v2-standard-preview",
+    displayName: "Riverflow V2 Standard",
+    description: "Balanced speed and quality model",
+    costPerImage: 50,
+    costUSD: 0.02,
+    maxWidth: 1024,
+    maxHeight: 1024,
+    defaultParams: {
+      width: 1024,
+      height: 1024,
+      steps: 25,
+      guidanceScale: 7.5,
+      numOutputs: 1,
+    },
+    supportsNegativePrompt: true,
+    supportsSeed: true,
+    avgGenerationTime: 12,
+  },
+  [AIModel.RIVERFLOW_MAX]: {
+    openrouterId: "sourceful/riverflow-v2-max-preview",
+    displayName: "Riverflow V2 Max",
+    description: "Maximum quality Riverflow model",
+    costPerImage: 90,
+    costUSD: 0.035,
+    maxWidth: 1024,
+    maxHeight: 1024,
+    defaultParams: {
+      width: 1024,
+      height: 1024,
+      steps: 30,
+      guidanceScale: 8.0,
+      numOutputs: 1,
+    },
+    supportsNegativePrompt: true,
+    supportsSeed: true,
+    avgGenerationTime: 15,
+  },
+  [AIModel.SEEDREAM]: {
+    openrouterId: "bytedance-seed/seedream-4.5",
+    displayName: "Seedream 4.5",
+    description: "ByteDance Seed's latest image generation model",
+    costPerImage: 25,
+    costUSD: 0.01,
+    maxWidth: 1024,
+    maxHeight: 1024,
+    defaultParams: {
+      width: 1024,
+      height: 1024,
+      steps: 20,
+      guidanceScale: 7.0,
+      numOutputs: 1,
+    },
+    supportsNegativePrompt: true,
+    supportsSeed: true,
+    avgGenerationTime: 10,
+  },
 };
 
 /**
@@ -397,7 +456,7 @@ export class OpenRouterProvider implements ModelProvider {
   private extractImageUrls(response: OpenRouterResponse): string[] {
     const urls: string[] = [];
 
-    console.log("OpenRouter response:", JSON.stringify(response, null, 2));
+    // console.log("OpenRouter response:", JSON.stringify(response, null, 2));
 
     for (const choice of response.choices) {
       // New format: images array with data URLs

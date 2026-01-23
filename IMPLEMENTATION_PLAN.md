@@ -140,14 +140,53 @@ Building a platform-agnostic AI image generation studio using:
 
 ### 2.3 Generation Frontend
 
-- [ ] Create generation page (`/generate`)
-- [ ] Build prompt input component
-- [ ] Add model selector UI (grid/cards)
-- [ ] Implement parameter controls (basic/advanced modes)
-- [ ] Create real-time status tracking component
-- [ ] Add progress indicators
-- [ ] Implement result display
-- [ ] Add download functionality
+- [x] Create generation page (`/generate`)
+- [x] Build prompt input component
+- [x] Add model selector UI (grid/cards)
+- [x] Implement parameter controls (basic/advanced modes)
+- [x] Create real-time status tracking component
+- [x] Add progress indicators
+- [x] Implement result display
+- [x] Add download functionality
+
+**Implementation**: Complete generation frontend in `app/(protected)/generate/` and `components/generate/`:
+
+- `page.tsx` - Main generation page with integrated form and real-time status
+  - User credits and plan display
+  - Form state management with React hooks
+  - Real-time job status tracking with Convex queries
+  - Cost estimation before generation
+  - Responsive layout with sidebar for status/results
+- `PromptInput.tsx` - Prompt and negative prompt input component
+  - Multi-line textarea with validation
+  - Character guidance and examples
+  - Advanced mode toggle for negative prompts
+- `ModelSelector.tsx` - Visual model selection with cards
+  - 3 pre-configured models (DALL-E 3, SDXL, Midjourney)
+  - Cost, speed, and quality indicators
+  - Recommended model badge
+  - Responsive grid layout
+- `ParameterControls.tsx` - Basic and advanced parameter controls
+  - Resolution presets (Square, Portrait, Landscape)
+  - Number of images selector (1-4)
+  - Advanced: Steps slider (10-50)
+  - Advanced: Guidance scale slider (1-20)
+  - Advanced: Seed input for reproducibility
+  - Helpful tooltips and labels
+- `GenerationStatus.tsx` - Real-time status tracking component
+  - Live job status updates via Convex reactive queries
+  - Progress bar with percentage
+  - Status badges (Pending, Processing, Completed, Failed)
+  - Job details display (model, resolution, cost, completion time)
+  - Error message display with user-friendly formatting
+- `GenerationResult.tsx` - Result display and download functionality
+  - Image gallery with thumbnail grid for multiple images
+  - Image selection and lightbox view
+  - Download individual images
+  - Share functionality (native share API + clipboard fallback)
+  - Metadata display (prompt, model, resolution, credits, seed)
+  - Copy prompt and use as template actions
+  - Responsive design for all screen sizes
 
 ### 2.4 Image Storage & CDN
 

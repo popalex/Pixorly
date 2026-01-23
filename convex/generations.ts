@@ -251,6 +251,42 @@ export const getGenerationJob = query({
 });
 
 /**
+ * Get a specific image by ID
+ *
+ * Query to fetch image details including CloudFront URL.
+ */
+export const getImage = query({
+  args: { imageId: v.id("images") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const image = await ctx.db.get(args.imageId);
+    if (!image) {
+      return null;
+    }
+
+    // Allow access if the image is public or the user owns it
+    if (image.isPublic) {
+      return image;
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    if (!user || image.userId !== user._id) {
+      throw new Error("Unauthorized: Not your image");
+    }
+
+    return image;
+  },
+});
+
+/**
  * List user's generation jobs
  */
 export const listGenerationJobs = query({
@@ -303,24 +339,51 @@ export const listGenerationJobs = query({
  * Helper: Calculate credit cost based on model and resolution
  */
 function calculateCreditCost(model: string, width: number, height: number): number {
-  // Base costs per model
-  const baseCosts: Record<string, number> = {
-    "openai/dall-e-3": 5,
-    "openai/dall-e-2": 2,
-    "stability-ai/sdxl": 3,
-    "black-forest-labs/flux-1.1-pro": 4,
-    midjourney: 4,
+  // Map AIModel enum values to their actual OpenRouter IDs and costs
+  const modelMapping: Record<string, { id: string; cost: number }> = {
+    // Black Forest Labs FLUX models (enum value -> OpenRouter ID)
+    "flux-pro": { id: "black-forest-labs/flux.2-pro", cost: 100 },
+    "flux-max": { id: "black-forest-labs/flux.2-max", cost: 120 },
+    "flux-flex": { id: "black-forest-labs/flux.2-flex", cost: 80 },
+    "flux-klein": { id: "black-forest-labs/flux.2-klein-4b", cost: 40 },
+    // Sourceful Riverflow models
+    "riverflow-fast": { id: "sourceful/riverflow-v2-fast-preview", cost: 30 },
+    "riverflow-standard": { id: "sourceful/riverflow-v2-standard-preview", cost: 50 },
+    "riverflow-max": { id: "sourceful/riverflow-v2-max-preview", cost: 90 },
+    // ByteDance Seed
+    seedream: { id: "bytedance-seed/seedream-4.5", cost: 25 },
+    // Direct OpenRouter IDs (for backward compatibility)
+    "black-forest-labs/flux.2-pro": { id: "black-forest-labs/flux.2-pro", cost: 100 },
+    "black-forest-labs/flux.2-max": { id: "black-forest-labs/flux.2-max", cost: 120 },
+    "black-forest-labs/flux.2-flex": { id: "black-forest-labs/flux.2-flex", cost: 80 },
+    "black-forest-labs/flux.2-klein-4b": { id: "black-forest-labs/flux.2-klein-4b", cost: 40 },
+    "sourceful/riverflow-v2-fast-preview": { id: "sourceful/riverflow-v2-fast-preview", cost: 30 },
+    "sourceful/riverflow-v2-standard-preview": {
+      id: "sourceful/riverflow-v2-standard-preview",
+      cost: 50,
+    },
+    "sourceful/riverflow-v2-max-preview": { id: "sourceful/riverflow-v2-max-preview", cost: 90 },
+    "bytedance-seed/seedream-4.5": { id: "bytedance-seed/seedream-4.5", cost: 25 },
   };
 
-  let cost = baseCosts[model] || 3; // Default to 3 credits
+  const modelInfo = modelMapping[model] || { id: model, cost: 50 };
+  let cost = modelInfo.cost;
 
-  // Apply resolution multiplier
+  // Apply resolution multiplier for larger images
   const pixels = width * height;
-  if (pixels > 1024 * 1024) {
-    cost *= 1.5; // 50% more for high-res
+  const standardPixels = 1024 * 1024;
+
+  if (pixels > standardPixels) {
+    // Scale cost based on pixel count
+    const multiplier = pixels / standardPixels;
+    cost = Math.ceil(cost * multiplier);
   }
 
-  return Math.ceil(cost);
+  console.log(
+    `Credit calculation - Model: ${model}, Mapped: ${modelInfo.id}, Base cost: ${modelInfo.cost}, Resolution: ${width}x${height}, Final cost: ${cost}`
+  );
+
+  return cost;
 }
 
 /**

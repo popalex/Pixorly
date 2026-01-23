@@ -3,6 +3,7 @@
  *
  * This file demonstrates how to use the OpenRouter integration in Pixorly.
  * These examples can be adapted for use in Convex actions, API routes, or server components.
+ * Updated to use only valid OpenRouter models.
  */
 
 import {
@@ -17,7 +18,7 @@ import {
 } from "../index";
 
 /**
- * Example 1: Basic Image Generation
+ * Example 1: Basic Image Generation with FLUX Pro
  */
 export async function basicGeneration() {
   // Initialize the provider
@@ -26,7 +27,7 @@ export async function basicGeneration() {
   // Generate an image
   const result = await provider.generate({
     prompt: "A serene mountain landscape at sunset with a lake reflection",
-    model: AIModel.DALL_E_3,
+    model: AIModel.FLUX_PRO,
     userId: "user_123",
     params: {
       width: 1024,
@@ -42,20 +43,20 @@ export async function basicGeneration() {
 }
 
 /**
- * Example 2: Advanced SDXL Generation with Fine Control
+ * Example 2: Advanced FLUX Klein Generation with Fine Control
  */
-export async function advancedSDXLGeneration() {
+export async function advancedFluxGeneration() {
   const provider = getOpenRouterProvider();
 
   const result = await provider.generate({
     prompt: "Cyberpunk city street at night, neon lights, rain-soaked pavement, highly detailed",
-    model: AIModel.SDXL,
+    model: AIModel.FLUX_KLEIN,
     userId: "user_123",
     params: {
       width: 1024,
       height: 1024,
-      steps: 50, // Higher quality
-      guidanceScale: 10, // Strong prompt adherence
+      steps: 25, // Higher quality
+      guidanceScale: 7.5, // Strong prompt adherence
       negativePrompt: "blurry, low quality, watermark, text, distorted",
       seed: 42, // Reproducible results
     },
@@ -65,14 +66,14 @@ export async function advancedSDXLGeneration() {
 }
 
 /**
- * Example 3: Artistic Midjourney Generation
+ * Example 3: Fast Riverflow Generation
  */
-export async function artisticMidjourneyGeneration() {
+export async function fastRiverflowGeneration() {
   const provider = getOpenRouterProvider();
 
   const result = await provider.generate({
     prompt: "Epic fantasy dragon perched on a castle tower, dramatic lighting",
-    model: AIModel.MIDJOURNEY,
+    model: AIModel.RIVERFLOW_FAST,
     userId: "user_123",
     params: {
       width: 1024,
@@ -93,11 +94,11 @@ export async function calculateCostExample() {
   // Calculate cost for a single image
   const cost = await provider.calculateCost({
     prompt: "Test prompt",
-    model: AIModel.DALL_E_3,
+    model: AIModel.FLUX_PRO,
     userId: "user_123",
     params: {
-      width: 1792,
-      height: 1024, // Landscape format costs more
+      width: 1024,
+      height: 1024,
     },
   });
 
@@ -105,8 +106,8 @@ export async function calculateCostExample() {
   console.log("Breakdown:", cost.breakdown);
 
   // Calculate batch costs
-  const batch = calculateBatchCost(AIModel.SDXL, 10);
-  console.log(`10 SDXL images: ${batch.credits} credits ($${batch.usd})`);
+  const batch = calculateBatchCost(AIModel.FLUX_KLEIN, 10);
+  console.log(`10 FLUX Klein images: ${batch.credits} credits ($${batch.usd})`);
 
   return cost;
 }
@@ -135,7 +136,7 @@ export async function listAvailableModels() {
  * Example 6: Model Comparison
  */
 export async function compareAvailableModels() {
-  const comparison = compareModels([AIModel.DALL_E_3, AIModel.SDXL, AIModel.MIDJOURNEY]);
+  const comparison = compareModels([AIModel.FLUX_PRO, AIModel.FLUX_KLEIN, AIModel.RIVERFLOW_FAST]);
 
   console.table(comparison);
 
@@ -153,15 +154,15 @@ export async function compareAvailableModels() {
  * Example 7: Get Recommended Parameters
  */
 export async function getModelRecommendations() {
-  const sdxlParams = getRecommendedParams(AIModel.SDXL);
-  const dalleParams = getRecommendedParams(AIModel.DALL_E_3);
-  const midjourneyParams = getRecommendedParams(AIModel.MIDJOURNEY);
+  const fluxProParams = getRecommendedParams(AIModel.FLUX_PRO);
+  const fluxKleinParams = getRecommendedParams(AIModel.FLUX_KLEIN);
+  const riverflowParams = getRecommendedParams(AIModel.RIVERFLOW_FAST);
 
-  console.log("SDXL recommended:", sdxlParams);
-  console.log("DALL-E 3 recommended:", dalleParams);
-  console.log("Midjourney recommended:", midjourneyParams);
+  console.log("FLUX Pro recommended:", fluxProParams);
+  console.log("FLUX Klein recommended:", fluxKleinParams);
+  console.log("Riverflow recommended:", riverflowParams);
 
-  return { sdxlParams, dalleParams, midjourneyParams };
+  return { fluxProParams, fluxKleinParams, riverflowParams };
 }
 
 /**
@@ -173,7 +174,7 @@ export async function errorHandlingExample() {
   try {
     await provider.generate({
       prompt: "Test",
-      model: AIModel.DALL_E_3,
+      model: AIModel.FLUX_PRO,
       userId: "user_123",
       params: {
         width: 3000, // Exceeds max dimensions
@@ -210,23 +211,23 @@ export async function batchGenerationExample() {
   const results = await Promise.allSettled([
     provider.generate({
       prompt,
-      model: AIModel.DALL_E_3,
+      model: AIModel.FLUX_PRO,
       userId: "user_123",
     }),
     provider.generate({
       prompt,
-      model: AIModel.SDXL,
+      model: AIModel.FLUX_KLEIN,
       userId: "user_123",
     }),
     provider.generate({
       prompt,
-      model: AIModel.MIDJOURNEY,
+      model: AIModel.RIVERFLOW_FAST,
       userId: "user_123",
     }),
   ]);
 
   results.forEach((result, index) => {
-    const models = [AIModel.DALL_E_3, AIModel.SDXL, AIModel.MIDJOURNEY];
+    const models = [AIModel.FLUX_PRO, AIModel.FLUX_KLEIN, AIModel.RIVERFLOW_FAST];
     if (result.status === "fulfilled") {
       console.log(`${models[index]}: Success - ${result.value.creditsCost} credits`);
     } else {

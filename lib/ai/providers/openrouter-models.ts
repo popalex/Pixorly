@@ -58,161 +58,263 @@ export const OPENROUTER_MODELS: Partial<
     }
   >
 > = {
-  [AIModel.DALL_E_3]: {
-    id: AIModel.DALL_E_3,
-    openrouterId: "openai/dall-e-3",
-    name: "DALL-E 3",
-    description:
-      "OpenAI's most advanced image generation model with photorealistic results and strong prompt adherence",
-    provider: "OpenAI",
+  [AIModel.FLUX_PRO]: {
+    id: AIModel.FLUX_PRO,
+    openrouterId: "black-forest-labs/flux.2-pro",
+    name: "FLUX.2 Pro",
+    description: "Black Forest Labs premium model with highest quality image generation",
+    provider: "Black Forest Labs",
     category: "Premium",
     features: [
-      "Photorealistic output",
+      "Highest quality output",
       "Excellent prompt understanding",
       "High detail and coherence",
-      "Safe content filtering",
+      "Negative prompts supported",
     ],
-    limitations: [
-      "No negative prompts",
-      "No seed control",
-      "Higher cost",
-      "Limited resolution options",
-    ],
+    limitations: ["Higher cost", "Slower generation"],
     pricing: {
       creditsPerImage: 100,
       usdPerImage: 0.04,
-      // Resolution-based pricing
       resolutionCosts: {
         "1024x1024": 0.04,
-        "1024x1792": 0.08,
-        "1792x1024": 0.08,
+        "2048x2048": 0.08,
       },
     },
     dimensions: {
       supported: [
         { width: 1024, height: 1024 },
-        { width: 1024, height: 1792 }, // Portrait
-        { width: 1792, height: 1024 }, // Landscape
+        { width: 1536, height: 1536 },
+        { width: 2048, height: 2048 },
       ],
-      min: { width: 1024, height: 1024 },
-      max: { width: 1792, height: 1792 },
+      min: { width: 512, height: 512 },
+      max: { width: 2048, height: 2048 },
       default: { width: 1024, height: 1024 },
     },
     performance: {
-      avgGenerationTime: 10,
-      minGenerationTime: 5,
-      maxGenerationTime: 30,
+      avgGenerationTime: 25,
+      minGenerationTime: 15,
+      maxGenerationTime: 40,
     },
-    bestFor: ["Photorealistic images", "Product photography", "Marketing materials"],
+    bestFor: ["Professional work", "High quality renders", "Marketing materials"],
   },
 
-  [AIModel.SDXL]: {
-    id: AIModel.SDXL,
-    openrouterId: "stability-ai/sdxl",
-    name: "Stable Diffusion XL",
-    description:
-      "High-quality open-source image generation with fine control over style and composition",
-    provider: "Stability AI",
+  [AIModel.FLUX_KLEIN]: {
+    id: AIModel.FLUX_KLEIN,
+    openrouterId: "black-forest-labs/flux.2-klein-4b",
+    name: "FLUX.2 Klein 4B",
+    description: "Fast 4B parameter model with excellent quality and speed balance",
+    provider: "Black Forest Labs",
     category: "Standard",
     features: [
+      "Fast generation",
+      "Good quality",
       "Negative prompts supported",
-      "Seed control for reproducibility",
-      "Fine parameter tuning",
+      "Seed control",
       "Cost-effective",
     ],
-    limitations: [
-      "May require prompt engineering",
-      "Less photorealistic than DALL-E 3",
-      "Potential for artifacts",
-    ],
+    limitations: ["Lower quality than Pro/Max"],
     pricing: {
-      creditsPerImage: 30,
-      usdPerImage: 0.012,
-      // Steps affect pricing
-      stepMultiplier: {
-        20: 0.8, // 20% discount
-        30: 1.0, // Base price
-        50: 1.5, // 50% premium
-      },
+      creditsPerImage: 40,
+      usdPerImage: 0.015,
     },
     dimensions: {
       supported: [
         { width: 512, height: 512 },
-        { width: 768, height: 768 },
         { width: 1024, height: 1024 },
+        { width: 2048, height: 2048 },
       ],
       min: { width: 512, height: 512 },
-      max: { width: 1024, height: 1024 },
+      max: { width: 2048, height: 2048 },
       default: { width: 1024, height: 1024 },
     },
     parameters: {
       steps: {
-        min: 20,
-        max: 50,
-        default: 30,
-        recommended: 30,
+        min: 10,
+        max: 30,
+        default: 20,
+        recommended: 20,
       },
       guidanceScale: {
         min: 1,
-        max: 20,
-        default: 7.5,
-        recommended: 7.5,
+        max: 15,
+        default: 7.0,
+        recommended: 7.0,
       },
     },
     performance: {
-      avgGenerationTime: 8,
-      minGenerationTime: 3,
+      avgGenerationTime: 10,
+      minGenerationTime: 5,
       maxGenerationTime: 15,
     },
-    bestFor: [
-      "Artistic illustrations",
-      "Concept art",
-      "Custom styles",
-      "Budget-conscious projects",
-    ],
+    bestFor: ["Quick iterations", "Testing prompts", "Budget projects"],
   },
 
-  [AIModel.MIDJOURNEY]: {
-    id: AIModel.MIDJOURNEY,
-    openrouterId: "midjourney/v6",
-    name: "Midjourney v6",
-    description:
-      "Artistic and creative image generation known for stunning aesthetics and composition",
-    provider: "Midjourney",
+  [AIModel.FLUX_MAX]: {
+    id: AIModel.FLUX_MAX,
+    openrouterId: "black-forest-labs/flux.2-max",
+    name: "FLUX.2 Max",
+    description: "Maximum quality model for professional work",
+    provider: "Black Forest Labs",
     category: "Premium",
-    features: [
-      "Exceptional artistic quality",
-      "Strong composition",
-      "Unique aesthetic style",
-      "Negative prompts supported",
-    ],
-    limitations: [
-      "No seed control",
-      "Higher cost",
-      "Limited parameter control",
-      "May be less literal with prompts",
-    ],
+    features: ["Highest quality", "Best detail", "Negative prompts supported", "Seed control"],
+    limitations: ["Highest cost", "Slower generation"],
     pricing: {
-      creditsPerImage: 150,
-      usdPerImage: 0.06,
+      creditsPerImage: 120,
+      usdPerImage: 0.05,
     },
     dimensions: {
       supported: [
         { width: 1024, height: 1024 },
-        { width: 1456, height: 816 }, // 16:9
-        { width: 816, height: 1456 }, // 9:16
         { width: 2048, height: 2048 },
       ],
-      min: { width: 1024, height: 1024 },
+      min: { width: 512, height: 512 },
       max: { width: 2048, height: 2048 },
+      default: { width: 1024, height: 1024 },
+    },
+    performance: {
+      avgGenerationTime: 30,
+      minGenerationTime: 20,
+      maxGenerationTime: 50,
+    },
+    bestFor: ["Professional work", "Maximum quality needed"],
+  },
+
+  [AIModel.FLUX_FLEX]: {
+    id: AIModel.FLUX_FLEX,
+    openrouterId: "black-forest-labs/flux.2-flex",
+    name: "FLUX.2 Flex",
+    description: "Flexible model with balanced quality and speed",
+    provider: "Black Forest Labs",
+    category: "Standard",
+    features: ["Balanced quality/speed", "Negative prompts supported", "Seed control"],
+    limitations: [],
+    pricing: {
+      creditsPerImage: 80,
+      usdPerImage: 0.03,
+    },
+    dimensions: {
+      supported: [
+        { width: 1024, height: 1024 },
+        { width: 2048, height: 2048 },
+      ],
+      min: { width: 512, height: 512 },
+      max: { width: 2048, height: 2048 },
+      default: { width: 1024, height: 1024 },
+    },
+    performance: {
+      avgGenerationTime: 18,
+      minGenerationTime: 12,
+      maxGenerationTime: 25,
+    },
+    bestFor: ["General purpose", "Balanced needs"],
+  },
+
+  [AIModel.RIVERFLOW_FAST]: {
+    id: AIModel.RIVERFLOW_FAST,
+    openrouterId: "sourceful/riverflow-v2-fast-preview",
+    name: "Riverflow V2 Fast",
+    description: "Sourceful's fast image generation model",
+    provider: "Sourceful",
+    category: "Standard",
+    features: ["Very fast", "Low cost", "Good quality for speed"],
+    limitations: ["Preview version", "Lower quality than FLUX"],
+    pricing: {
+      creditsPerImage: 30,
+      usdPerImage: 0.01,
+    },
+    dimensions: {
+      supported: [{ width: 1024, height: 1024 }],
+      min: { width: 512, height: 512 },
+      max: { width: 1024, height: 1024 },
+      default: { width: 1024, height: 1024 },
+    },
+    performance: {
+      avgGenerationTime: 8,
+      minGenerationTime: 5,
+      maxGenerationTime: 12,
+    },
+    bestFor: ["Fast iterations", "Budget work"],
+  },
+
+  [AIModel.RIVERFLOW_STANDARD]: {
+    id: AIModel.RIVERFLOW_STANDARD,
+    openrouterId: "sourceful/riverflow-v2-standard-preview",
+    name: "Riverflow V2 Standard",
+    description: "Balanced speed and quality",
+    provider: "Sourceful",
+    category: "Standard",
+    features: ["Balanced", "Good value"],
+    limitations: ["Preview version"],
+    pricing: {
+      creditsPerImage: 50,
+      usdPerImage: 0.02,
+    },
+    dimensions: {
+      supported: [{ width: 1024, height: 1024 }],
+      min: { width: 512, height: 512 },
+      max: { width: 1024, height: 1024 },
+      default: { width: 1024, height: 1024 },
+    },
+    performance: {
+      avgGenerationTime: 12,
+      minGenerationTime: 8,
+      maxGenerationTime: 18,
+    },
+    bestFor: ["General use"],
+  },
+
+  [AIModel.RIVERFLOW_MAX]: {
+    id: AIModel.RIVERFLOW_MAX,
+    openrouterId: "sourceful/riverflow-v2-max-preview",
+    name: "Riverflow V2 Max",
+    description: "Maximum quality Riverflow model",
+    provider: "Sourceful",
+    category: "Standard",
+    features: ["Best Riverflow quality"],
+    limitations: ["Preview version"],
+    pricing: {
+      creditsPerImage: 90,
+      usdPerImage: 0.035,
+    },
+    dimensions: {
+      supported: [{ width: 1024, height: 1024 }],
+      min: { width: 512, height: 512 },
+      max: { width: 1024, height: 1024 },
       default: { width: 1024, height: 1024 },
     },
     performance: {
       avgGenerationTime: 15,
       minGenerationTime: 10,
-      maxGenerationTime: 60,
+      maxGenerationTime: 20,
     },
-    bestFor: ["Artistic projects", "Book covers", "Fantasy/sci-fi art", "Creative exploration"],
+    bestFor: ["Quality Riverflow work"],
+  },
+
+  [AIModel.SEEDREAM]: {
+    id: AIModel.SEEDREAM,
+    openrouterId: "bytedance-seed/seedream-4.5",
+    name: "Seedream 4.5",
+    description: "ByteDance Seed's latest image generation model",
+    provider: "ByteDance Seed",
+    category: "Standard",
+    features: ["Latest model", "Very low cost"],
+    limitations: ["Newer model"],
+    pricing: {
+      creditsPerImage: 25,
+      usdPerImage: 0.01,
+    },
+    dimensions: {
+      supported: [{ width: 1024, height: 1024 }],
+      min: { width: 512, height: 512 },
+      max: { width: 1024, height: 1024 },
+      default: { width: 1024, height: 1024 },
+    },
+    performance: {
+      avgGenerationTime: 10,
+      minGenerationTime: 5,
+      maxGenerationTime: 15,
+    },
+    bestFor: ["Budget work", "Testing"],
   },
 };
 
@@ -249,26 +351,15 @@ export function getModelsByCategory(category: "Premium" | "Standard") {
  */
 export function calculateBatchCost(
   model: AIModel,
-  count: number,
-  resolution?: { width: number; height: number }
+  count: number
 ): { credits: number; usd: number } {
   const config = OPENROUTER_MODELS[model];
   if (!config) {
     throw new Error(`Model ${model} not found`);
   }
 
-  let baseCredits = config.pricing.creditsPerImage;
-  let baseUsd = config.pricing.usdPerImage;
-
-  // Apply resolution-based pricing for DALL-E 3
-  if (model === AIModel.DALL_E_3 && resolution) {
-    const resKey = `${resolution.width}x${resolution.height}`;
-    const resolutionCost = config.pricing.resolutionCosts?.[resKey];
-    if (resolutionCost) {
-      baseUsd = resolutionCost;
-      baseCredits = Math.ceil((resolutionCost / 0.04) * 100);
-    }
-  }
+  const baseCredits = config.pricing.creditsPerImage;
+  const baseUsd = config.pricing.usdPerImage;
 
   return {
     credits: baseCredits * count,

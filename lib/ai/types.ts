@@ -6,25 +6,19 @@
  * Supported AI models
  */
 export enum AIModel {
-  // OpenAI
-  DALL_E_3 = "dall-e-3",
-  DALL_E_2 = "dall-e-2",
-
-  // Stable Diffusion (OpenRouter/Replicate)
-  SDXL = "sdxl",
-  SD_3 = "sd-3",
-
-  // Flux (Replicate)
-  FLUX_SCHNELL = "flux-schnell",
-  FLUX_DEV = "flux-dev",
+  // Black Forest Labs FLUX models (OpenRouter)
   FLUX_PRO = "flux-pro",
+  FLUX_MAX = "flux-max",
+  FLUX_FLEX = "flux-flex",
   FLUX_KLEIN = "flux-klein",
 
-  // Midjourney (OpenRouter)
-  MIDJOURNEY = "midjourney",
-
-  // Riverflow (OpenRouter)
+  // Sourceful Riverflow models (OpenRouter)
   RIVERFLOW_FAST = "riverflow-fast",
+  RIVERFLOW_STANDARD = "riverflow-standard",
+  RIVERFLOW_MAX = "riverflow-max",
+
+  // ByteDance Seed (OpenRouter)
+  SEEDREAM = "seedream",
 }
 
 /**

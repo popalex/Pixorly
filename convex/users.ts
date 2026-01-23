@@ -133,6 +133,38 @@ export const getCurrentUser = query({
   },
 });
 
+/**
+ * TEST ONLY: Add credits to current user
+ * Remove this in production!
+ */
+export const addTestCredits = mutation({
+  args: {
+    amount: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await ctx.db.patch(user._id, {
+      credits: user.credits + args.amount,
+      updatedAt: Date.now(),
+    });
+
+    return { newBalance: user.credits + args.amount };
+  },
+});
+
 // Get user by ID
 export const getUserById = query({
   args: {
