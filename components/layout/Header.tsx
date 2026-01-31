@@ -22,6 +22,9 @@ export function Header() {
             <Link href="/gallery" className="text-sm font-medium text-gray-700 hover:text-gray-900">
               Gallery
             </Link>
+            <Link href="/account" className="text-sm font-medium text-gray-700 hover:text-gray-900">
+              Account
+            </Link>
             <UserButton afterSignOutUrl="/" />
           </SignedIn>
 

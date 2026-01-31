@@ -264,3 +264,95 @@ export const deductCredits = mutation({
     });
   },
 });
+
+// Get user usage statistics
+export const getUserUsageStats = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Get total images generated
+    const images = await ctx.db
+      .query("images")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+
+    // Get recent generation jobs
+    const recentJobs = await ctx.db
+      .query("generationJobs")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .order("desc")
+      .take(10);
+
+    // Get usage for last 30 days
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    const recentImages = images.filter((img) => img.createdAt >= thirtyDaysAgo);
+
+    // Calculate statistics
+    const totalGenerations = await ctx.db
+      .query("generationJobs")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+
+    const successfulGenerations = totalGenerations.filter((job) => job.status === "completed");
+    const failedGenerations = totalGenerations.filter((job) => job.status === "failed");
+
+    return {
+      totalImages: images.length,
+      totalGenerations: totalGenerations.length,
+      successfulGenerations: successfulGenerations.length,
+      failedGenerations: failedGenerations.length,
+      imagesLast30Days: recentImages.length,
+      recentJobs,
+      storageUsedBytes: user.storageUsedBytes,
+      storageQuotaBytes: user.storageQuotaBytes,
+      creditsRemaining: user.credits,
+      plan: user.plan,
+    };
+  },
+});
+
+// Update user settings
+export const updateUserSettings = mutation({
+  args: {
+    emailNotifications: v.optional(v.boolean()),
+    defaultModel: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await ctx.db.patch(user._id, {
+      ...(args.emailNotifications !== undefined && {
+        emailNotifications: args.emailNotifications,
+      }),
+      ...(args.defaultModel !== undefined && { defaultModel: args.defaultModel }),
+      updatedAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});

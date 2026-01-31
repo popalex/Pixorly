@@ -250,12 +250,55 @@ Building a platform-agnostic AI image generation studio using:
 
 ### 3.1 User Account Management
 
-- [ ] Create user profile page
-- [ ] Display storage usage meter
-- [ ] Show credit balance
-- [ ] Add plan information display
-- [ ] Implement account settings
-- [ ] Add usage history view
+- [x] Create user profile page
+- [x] Display storage usage meter
+- [x] Show credit balance
+- [x] Add plan information display
+- [x] Implement account settings
+- [x] Add usage history view
+
+**Implementation**: Complete user account management in `app/(protected)/account/` and `components/account/`:
+
+- Backend (`convex/users.ts`):
+  - `getUserUsageStats` - Query to fetch comprehensive user statistics
+  - `updateUserSettings` - Mutation to update email notifications and default model
+  - Statistics include: total images, successful/failed generations, 30-day activity, recent jobs
+- Frontend Components (`components/account/`):
+  - `StorageUsageMeter.tsx` - Visual storage usage with color-coded progress bar
+    - Shows GB used/quota with percentage
+    - Warning states at 75% and 90% usage
+    - Responsive color coding (blue/yellow/red)
+  - `CreditBalance.tsx` - Credit balance display with visual indicator
+    - Large, prominent credit count
+    - Percentage indicator badge
+    - Progress bar showing remaining credits
+    - Low credit warning (< 5 credits)
+  - `PlanInformation.tsx` - Plan details and features display
+    - Shows current plan (Free/Pro/Enterprise)
+    - Lists plan features with checkmarks
+    - Subscription status badges (active/trial/canceled/past_due)
+    - Trial countdown display
+    - Upgrade/manage subscription CTAs
+  - `AccountSettings.tsx` - User preferences and settings
+    - Email notification toggle
+    - Default model selector
+    - Save functionality with success/error messages
+    - Danger zone for account deletion (UI only)
+  - `UsageHistory.tsx` - Generation history and statistics
+    - Stats grid: total images, successful/failed generations, 30-day activity
+    - Recent activity list (last 10 jobs)
+    - Status badges for each generation
+    - Error message display for failed jobs
+    - Formatted dates and metadata
+- Main Page (`app/(protected)/account/page.tsx`):
+  - Responsive grid layout (3-column on desktop)
+  - Profile section with Clerk avatar and user info
+  - Left column: Credits, Plan, Storage
+  - Right column: Settings, Usage History
+  - Real-time data via Convex queries
+- Navigation:
+  - Added "Account" link to Header component
+  - Accessible from all protected pages
 
 ### 3.2 Subscription & Billing (Stripe Recommended)
 
