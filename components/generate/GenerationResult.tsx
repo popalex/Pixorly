@@ -131,6 +131,7 @@ function ImageDisplay({ imageId }: { imageId: Id<"images"> }) {
 
   // Use the actual CloudFront URL from the image record
   const imageUrl = image?.cloudFrontUrl || `/api/images/${imageId}`;
+  const blurDataUrl = image?.blurDataUrl;
 
   return (
     <>
@@ -144,6 +145,11 @@ function ImageDisplay({ imageId }: { imageId: Id<"images"> }) {
         alt="Generated image"
         fill
         className="object-contain"
+        placeholder={blurDataUrl ? "blur" : "empty"}
+        blurDataURL={blurDataUrl}
+        loading="lazy"
+        quality={90}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         onLoadingComplete={() => setIsLoading(false)}
         onError={() => setIsLoading(false)}
       />

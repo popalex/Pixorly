@@ -79,7 +79,8 @@ export default defineSchema({
     s3Key: v.string(), // S3 object key
     s3Bucket: v.string(),
     cloudFrontUrl: v.string(),
-    thumbnailUrl: v.optional(v.string()),
+    thumbnailUrl: v.optional(v.string()), // Thumbnail image URL
+    blurDataUrl: v.optional(v.string()), // Tiny blur placeholder (base64)
     fileSizeBytes: v.number(),
 
     // Metadata

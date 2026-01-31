@@ -190,12 +190,43 @@ Building a platform-agnostic AI image generation studio using:
 
 ### 2.4 Image Storage & CDN
 
-- [ ] Implement S3 upload in processGeneration
-- [ ] Generate CloudFront URLs
-- [ ] Create signed URL generation for private images
-- [ ] Add image metadata storage
-- [ ] Implement lazy loading with placeholders
-- [ ] Add image optimization hooks
+- [x] Implement S3 upload in processGeneration
+- [x] Generate CloudFront URLs
+- [x] Create signed URL generation for private images
+- [x] Add image metadata storage
+- [x] Implement lazy loading with placeholders
+- [x] Add image optimization hooks
+
+**Implementation**: Complete image storage and CDN in `convex/storage.ts` and integrated into generation workflow:
+
+- `storage.ts` - Comprehensive S3 and CloudFront utilities:
+  - `uploadImage` - Upload to S3 with server-side encryption (AES256)
+  - `deleteImage` - Delete from S3
+  - `getCloudFrontUrl` - Generate public CDN URLs
+  - `getSignedCloudFrontUrl` - Generate signed URLs with expiration (default 1 hour)
+  - `downloadImageFromUrl` - Download from AI provider (supports data URLs)
+  - `generateThumbnail` - Create 400x400px JPEG thumbnails with progressive encoding
+  - `generateBlurPlaceholder` - Create tiny 10x10px blur placeholders as base64 data URLs
+  - `optimizeImage` - Auto-optimize images (WebP for web, preserve PNG transparency)
+  - `getImageDimensions` - Extract width/height from image buffers
+  - Storage quota helpers and utilities
+- Schema updates:
+  - Added `thumbnailUrl` field to images table
+  - Added `blurDataUrl` field for Next.js Image blur placeholders
+- `generationActions.ts` integration:
+  - Automatic thumbnail generation during upload
+  - Blur placeholder creation for progressive loading
+  - Both uploaded to S3 and URLs stored in database
+  - Graceful fallback if thumbnail generation fails (non-critical)
+- Frontend optimization:
+  - `GenerationResult.tsx` updated with Next.js Image optimization
+  - Lazy loading enabled with `loading="lazy"`
+  - Blur placeholders for smooth progressive loading
+  - Responsive image sizing with `sizes` attribute
+  - Quality optimization (90% quality for balance)
+  - Loading states with spinner during image load
+
+**Dependencies**: sharp (0.34.5) for server-side image processing
 
 ### 2.5 Replicate Integration (Alternative Provider)
 

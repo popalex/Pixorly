@@ -14,6 +14,7 @@ import { Id } from "./_generated/dataModel";
 import { createOpenRouterProvider } from "../lib/ai/providers";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from "uuid";
+import { generateThumbnail, generateBlurPlaceholder } from "./storage";
 
 /**
  * Simple interface for generated image data
@@ -198,6 +199,28 @@ export const processGeneration = internalAction({
           console.log(
             `Image ${i + 1} S3 Key: ${uploadResult.s3Key}, Bucket: ${uploadResult.s3Bucket}, Size: ${uploadResult.fileSizeBytes} bytes`
           );
+
+          // Generate and upload thumbnail
+          console.log(`Generating thumbnail for image ${i + 1}...`);
+          let thumbnailUrl: string | undefined;
+          let blurDataUrl: string | undefined;
+          try {
+            const thumbnailBuffer = await generateThumbnail(imageBuffer);
+            const thumbnailKey = generateImageKey(user.clerkId, "jpg").replace(
+              /\.(png|webp|jpg)$/,
+              "-thumb.jpg"
+            );
+            await uploadImage(thumbnailBuffer, thumbnailKey, "image/jpeg");
+            thumbnailUrl = getCloudFrontUrl(thumbnailKey);
+
+            // Generate blur placeholder
+            blurDataUrl = await generateBlurPlaceholder(imageBuffer);
+            console.log(`Thumbnail and placeholder generated for image ${i + 1}`);
+          } catch (error) {
+            console.error(`Failed to generate thumbnail for image ${i + 1}:`, error);
+            // Continue without thumbnail - not critical
+          }
+
           // Generate CloudFront URL
           const cloudFrontUrl = getCloudFrontUrl(s3Key);
 
@@ -216,6 +239,8 @@ export const processGeneration = internalAction({
             s3Key: uploadResult.s3Key,
             s3Bucket: uploadResult.s3Bucket,
             cloudFrontUrl,
+            thumbnailUrl,
+            blurDataUrl,
             fileSizeBytes: uploadResult.fileSizeBytes,
             mimeType: generatedImage.contentType || "image/png",
           });

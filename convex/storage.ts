@@ -10,6 +10,7 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/cloudfront-signer";
 import { v4 as uuidv4 } from "uuid";
+import sharp from "sharp";
 
 /**
  * AWS Configuration from environment variables
@@ -191,4 +192,138 @@ export function getStorageQuotaBytes(plan: "free" | "pro" | "enterprise"): numbe
   };
 
   return (quotaGB[plan] || 1) * 1024 * 1024 * 1024; // Convert GB to bytes
+}
+
+/**
+ * Generate thumbnail from image buffer
+ * @param imageBuffer - Original image buffer
+ * @param maxWidth - Maximum thumbnail width (default: 400px)
+ * @param maxHeight - Maximum thumbnail height (default: 400px)
+ * @param quality - JPEG quality (default: 80)
+ */
+export async function generateThumbnail(
+  imageBuffer: Buffer,
+  maxWidth: number = 400,
+  maxHeight: number = 400,
+  quality: number = 80
+): Promise<Buffer> {
+  try {
+    const thumbnail = await sharp(imageBuffer)
+      .resize(maxWidth, maxHeight, {
+        fit: "inside",
+        withoutEnlargement: true,
+      })
+      .jpeg({ quality, progressive: true })
+      .toBuffer();
+
+    return thumbnail;
+  } catch (error) {
+    console.error("Thumbnail generation failed:", error);
+    throw new Error(
+      `Failed to generate thumbnail: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
+  }
+}
+
+/**
+ * Generate blur placeholder (tiny base64-encoded image)
+ * @param imageBuffer - Original image buffer
+ * @param width - Placeholder width (default: 10px)
+ * @param height - Placeholder height (default: 10px)
+ */
+export async function generateBlurPlaceholder(
+  imageBuffer: Buffer,
+  width: number = 10,
+  height: number = 10
+): Promise<string> {
+  try {
+    const placeholder = await sharp(imageBuffer)
+      .resize(width, height, { fit: "cover" })
+      .blur(2)
+      .jpeg({ quality: 30 })
+      .toBuffer();
+
+    return `data:image/jpeg;base64,${placeholder.toString("base64")}`;
+  } catch (error) {
+    console.error("Blur placeholder generation failed:", error);
+    // Return a simple gray placeholder as fallback
+    return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Crect width='10' height='10' fill='%23e5e7eb'/%3E%3C/svg%3E";
+  }
+}
+
+/**
+ * Optimize image for web delivery
+ * Converts to WebP format if supported, applies compression
+ * @param imageBuffer - Original image buffer
+ * @param quality - Output quality (default: 85)
+ * @param format - Target format: 'auto', 'webp', 'jpeg', 'png' (default: 'auto')
+ */
+export async function optimizeImage(
+  imageBuffer: Buffer,
+  quality: number = 85,
+  format: "auto" | "webp" | "jpeg" | "png" = "auto"
+): Promise<{ buffer: Buffer; contentType: string; extension: string }> {
+  try {
+    const image = sharp(imageBuffer);
+    const metadata = await image.metadata();
+
+    // Determine output format
+    let outputFormat = format;
+    if (format === "auto") {
+      // Prefer WebP for most cases, keep PNG if transparent
+      outputFormat = metadata.hasAlpha ? "png" : "webp";
+    }
+
+    let optimized: Buffer;
+    let contentType: string;
+    let extension: string;
+
+    switch (outputFormat) {
+      case "webp":
+        optimized = await image.webp({ quality }).toBuffer();
+        contentType = "image/webp";
+        extension = "webp";
+        break;
+      case "jpeg":
+        optimized = await image.jpeg({ quality, progressive: true }).toBuffer();
+        contentType = "image/jpeg";
+        extension = "jpg";
+        break;
+      case "png":
+        optimized = await image.png({ quality, progressive: true }).toBuffer();
+        contentType = "image/png";
+        extension = "png";
+        break;
+      default:
+        throw new Error(`Unsupported format: ${outputFormat}`);
+    }
+
+    return { buffer: optimized, contentType, extension };
+  } catch (error) {
+    console.error("Image optimization failed:", error);
+    // Return original on failure
+    return {
+      buffer: imageBuffer,
+      contentType: "image/png",
+      extension: "png",
+    };
+  }
+}
+
+/**
+ * Get image dimensions from buffer
+ */
+export async function getImageDimensions(
+  imageBuffer: Buffer
+): Promise<{ width: number; height: number }> {
+  try {
+    const metadata = await sharp(imageBuffer).metadata();
+    return {
+      width: metadata.width || 0,
+      height: metadata.height || 0,
+    };
+  } catch (error) {
+    console.error("Failed to get image dimensions:", error);
+    return { width: 0, height: 0 };
+  }
 }
