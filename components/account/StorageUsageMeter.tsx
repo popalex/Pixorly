@@ -11,40 +11,35 @@ export function StorageUsageMeter({ usedBytes, quotaBytes }: StorageUsageMeterPr
   const percentage = Math.min(100, (usedBytes / quotaBytes) * 100);
 
   // Color based on usage
-  let barColor = "bg-blue-500";
-  let textColor = "text-blue-600";
+  let barColor = "bg-accent";
 
   if (percentage > 90) {
-    barColor = "bg-red-500";
-    textColor = "text-red-600";
+    barColor = "bg-error";
   } else if (percentage > 75) {
-    barColor = "bg-yellow-500";
-    textColor = "text-yellow-600";
+    barColor = "bg-warning";
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-gray-700">Storage Used</span>
-        <span className={`text-sm font-semibold ${textColor}`}>
+        <span className="text-body-sm text-text-secondary">Storage Used</span>
+        <span className="text-body-sm font-medium text-text-primary">
           {usedGB} GB / {quotaGB} GB
         </span>
       </div>
 
       {/* Progress bar */}
-      <div className="h-3 w-full overflow-hidden rounded-full bg-gray-200">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-bg-tertiary">
         <div
-          className={`h-full transition-all duration-300 ${barColor}`}
+          className={`h-full transition-all duration-500 ${barColor}`}
           style={{ width: `${percentage}%` }}
         />
       </div>
 
       {/* Percentage */}
-      <div className="flex justify-between text-xs text-gray-500">
+      <div className="flex justify-between text-body-xs text-text-tertiary">
         <span>{percentage.toFixed(1)}% used</span>
-        {percentage > 90 && (
-          <span className="font-medium text-red-600">⚠️ Running low on storage</span>
-        )}
+        {percentage > 90 && <span className="font-medium text-error">Running low on storage</span>}
       </div>
     </div>
   );

@@ -108,61 +108,82 @@ export default function GeneratePage() {
   const hasInsufficientCredits = currentUser ? currentUser.credits < estimatedCost : false;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="relative min-h-screen bg-bg-primary">
+      {/* Background grid */}
+      <div
+        className="pointer-events-none fixed inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(250, 250, 249, 0.5) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(250, 250, 249, 0.5) 1px, transparent 1px)
+          `,
+          backgroundSize: "64px 64px",
+        }}
+      />
+
       <Header />
-      <main className="container mx-auto max-w-7xl px-4 py-8">
-        <div className="mb-8">
-          <h1 className="mb-2 text-3xl font-bold text-gray-900">Generate Images</h1>
-          <p className="text-gray-600">
-            Create stunning AI-generated images from text descriptions
+
+      <main className="relative mx-auto max-w-7xl px-6 py-10">
+        {/* Page Header */}
+        <div className="mb-10">
+          <h1 className="font-display text-display-md text-text-primary">Create</h1>
+          <p className="mt-2 text-body-lg text-text-secondary">
+            Transform your ideas into stunning visuals
           </p>
         </div>
 
-        {/* User Info Card */}
+        {/* User Stats Bar */}
         {currentUser && (
-          <div className="mb-8 rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-md">
-            <div className="flex items-center justify-between">
-              <div className="flex gap-8">
+          <div className="border-gradient mb-10 rounded-2xl bg-bg-secondary p-6">
+            <div className="flex flex-wrap items-center justify-between gap-6">
+              <div className="flex gap-10">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+                  <p className="text-body-xs font-medium uppercase tracking-widest text-text-tertiary">
                     Credits
                   </p>
-                  <p className="text-2xl font-bold text-gray-900">{currentUser.credits}</p>
+                  <p className="mt-1 flex items-baseline gap-2">
+                    <span className="font-display text-display-sm text-text-primary">
+                      {currentUser.credits}
+                    </span>
+                    <span className="text-body-sm text-text-tertiary">available</span>
+                  </p>
                 </div>
-                <div className="border-l-2 border-blue-200 pl-8">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+                <div className="border-l border-border-subtle pl-10">
+                  <p className="text-body-xs font-medium uppercase tracking-widest text-text-tertiary">
                     Plan
                   </p>
-                  <p className="text-2xl font-bold capitalize text-gray-900">{currentUser.plan}</p>
+                  <p className="mt-1 font-display text-display-sm capitalize text-text-primary">
+                    {currentUser.plan}
+                  </p>
                 </div>
               </div>
               <div className="flex gap-3">
                 {currentUser.credits < 100 && (
                   <a
                     href="/billing"
-                    className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:scale-105 hover:from-blue-700 hover:to-blue-800 hover:shadow-lg"
+                    className="rounded-xl border border-accent bg-accent-muted px-6 py-3 text-body-sm font-semibold text-accent transition-all duration-300 hover:bg-accent hover:text-bg-primary"
                   >
                     Add Credits
                   </a>
                 )}
                 <button
                   onClick={handleAddTestCredits}
-                  className="rounded-lg bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:scale-105 hover:from-purple-700 hover:to-purple-800 hover:shadow-lg"
+                  className="rounded-xl border border-border bg-bg-tertiary px-6 py-3 text-body-sm font-medium text-text-secondary transition-all duration-300 hover:border-accent hover:text-accent"
                   type="button"
                 >
-                  🧪 Add 200 Test Credits
+                  🧪 Add Test Credits
                 </button>
               </div>
             </div>
           </div>
         )}
-        {/* Error Message */}
+        {/* Error Messages */}
         {hasInsufficientCredits && (
-          <div className="mb-6 rounded-xl border-2 border-red-200 bg-red-50 p-4 shadow-md">
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
+          <div className="border-error/30 bg-error/10 mb-8 rounded-xl border p-4">
+            <div className="flex items-start gap-3">
+              <div className="bg-error/20 flex-shrink-0 rounded-full p-1">
                 <svg
-                  className="mt-0.5 h-5 w-5 text-red-600"
+                  className="h-5 w-5 text-error"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
@@ -174,21 +195,20 @@ export default function GeneratePage() {
                   />
                 </svg>
               </div>
-              <div className="ml-3 flex-1">
-                <p className="text-sm font-semibold text-red-800">
-                  Insufficient credits. Required: {estimatedCost}, Available:{" "}
-                  {currentUser?.credits || 0}. Please upgrade your plan or purchase more credits.
-                </p>
-              </div>
+              <p className="text-body-sm font-medium text-error">
+                Insufficient credits. Required: {estimatedCost}, Available:{" "}
+                {currentUser?.credits || 0}
+              </p>
             </div>
           </div>
         )}
+
         {error && !hasInsufficientCredits && (
-          <div className="mb-6 rounded-xl border-2 border-red-200 bg-red-50 p-4 shadow-md">
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
+          <div className="border-error/30 bg-error/10 mb-8 rounded-xl border p-4">
+            <div className="flex items-start gap-3">
+              <div className="bg-error/20 flex-shrink-0 rounded-full p-1">
                 <svg
-                  className="mt-0.5 h-5 w-5 text-red-600"
+                  className="h-5 w-5 text-error"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
@@ -200,13 +220,11 @@ export default function GeneratePage() {
                   />
                 </svg>
               </div>
-              <div className="ml-3 flex-1">
-                <p className="text-sm font-semibold text-red-800">{error}</p>
-              </div>
+              <p className="flex-1 text-body-sm font-medium text-error">{error}</p>
               <button
                 type="button"
                 onClick={() => setError(null)}
-                className="ml-3 flex-shrink-0 text-red-600 transition-colors hover:text-red-800"
+                className="text-error/70 flex-shrink-0 transition-colors hover:text-error"
               >
                 <span className="sr-only">Dismiss</span>
                 <svg
@@ -222,11 +240,11 @@ export default function GeneratePage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Generation Form */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
+              <div className="border-gradient rounded-2xl bg-bg-secondary p-6">
                 <PromptInput
                   value={prompt}
                   onChange={setPrompt}
@@ -237,7 +255,7 @@ export default function GeneratePage() {
                 />
               </div>
 
-              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
+              <div className="border-gradient rounded-2xl bg-bg-secondary p-6">
                 <ModelSelector
                   selected={selectedModel}
                   onChange={setSelectedModel}
@@ -245,13 +263,13 @@ export default function GeneratePage() {
                 />
               </div>
 
-              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">Parameters</h2>
+              <div className="border-gradient rounded-2xl bg-bg-secondary p-6">
+                <div className="mb-6 flex items-center justify-between">
+                  <h2 className="font-display text-xl text-text-primary">Parameters</h2>
                   <button
                     type="button"
                     onClick={() => setShowAdvanced(!showAdvanced)}
-                    className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                    className="text-body-sm font-medium text-accent transition-colors hover:text-accent-hover"
                   >
                     {showAdvanced ? "Hide" : "Show"} Advanced
                   </button>
@@ -264,29 +282,53 @@ export default function GeneratePage() {
                 />
               </div>
 
-              {/* Submit Button */}
-              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
-                <div className="mb-4 flex items-center justify-between">
+              {/* Submit Section */}
+              <div className="border-gradient rounded-2xl bg-bg-secondary p-6">
+                <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Estimated Cost</p>
-                    <p className="text-3xl font-bold text-gray-900">
-                      {estimatedCost} <span className="text-lg text-gray-500">credits</span>
+                    <p className="text-body-xs font-medium uppercase tracking-widest text-text-tertiary">
+                      Estimated Cost
+                    </p>
+                    <p className="mt-1 flex items-baseline gap-2">
+                      <span className="font-display text-display-sm text-text-primary">
+                        {estimatedCost}
+                      </span>
+                      <span className="text-body-sm text-text-tertiary">credits</span>
                     </p>
                   </div>
                   <button
                     type="submit"
                     disabled={isGenerating || !prompt.trim() || hasInsufficientCredits}
-                    className="rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-4 text-lg font-bold text-white shadow-lg transition-all hover:scale-105 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl disabled:scale-100 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-300 disabled:shadow-none"
+                    className="bg-accent-gradient group inline-flex items-center gap-3 rounded-xl px-8 py-4 font-semibold text-bg-primary shadow-glow transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_50px_var(--accent-glow)] disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
                   >
-                    {isGenerating ? "Generating..." : "Generate"}
+                    {isGenerating ? (
+                      <>
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-bg-primary border-t-transparent" />
+                        <span>Generating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Generate</span>
+                        <svg
+                          className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M13 7l5 5m0 0l-5 5m5-5H6"
+                          />
+                        </svg>
+                      </>
+                    )}
                   </button>
                 </div>
                 {!prompt.trim() && (
-                  <p className="text-xs text-gray-500">Enter a prompt to start generating</p>
-                )}
-                {hasInsufficientCredits && (
-                  <p className="text-xs font-medium text-red-600">
-                    Insufficient credits for this generation
+                  <p className="mt-4 text-body-xs text-text-tertiary">
+                    Enter a prompt to start generating
                   </p>
                 )}
               </div>
@@ -295,22 +337,22 @@ export default function GeneratePage() {
 
           {/* Status and Results Panel */}
           <div className="lg:col-span-1">
-            <div className="sticky top-8 space-y-6">
+            <div className="sticky top-28 space-y-6">
               {currentJobId && (
-                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
+                <div className="border-gradient rounded-2xl bg-bg-secondary p-6">
                   <GenerationStatus jobId={currentJobId} onComplete={handleGenerationComplete} />
                 </div>
               )}
 
               {currentJobId && !isGenerating && (
                 <>
-                  <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
+                  <div className="border-gradient rounded-2xl bg-bg-secondary p-6">
                     <GenerationResult jobId={currentJobId} />
                   </div>
 
                   <button
                     onClick={startNewGeneration}
-                    className="w-full rounded-xl bg-gradient-to-r from-green-600 to-green-700 px-4 py-3 font-bold text-white shadow-lg transition-all hover:scale-105 hover:from-green-700 hover:to-green-800 hover:shadow-xl"
+                    className="bg-success/10 w-full rounded-xl border border-success px-4 py-4 font-semibold text-success transition-all duration-300 hover:bg-success hover:text-bg-primary"
                   >
                     Start New Generation
                   </button>
@@ -318,25 +360,23 @@ export default function GeneratePage() {
               )}
 
               {!currentJobId && (
-                <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 shadow-md">
-                  <h3 className="mb-4 text-lg font-bold text-gray-900">💡 Pro Tips</h3>
-                  <ul className="space-y-3 text-sm text-gray-700">
-                    <li className="flex items-start">
-                      <span className="mr-2 text-blue-500">•</span>
-                      <span>Be specific and descriptive in your prompts</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="mr-2 text-blue-500">•</span>
-                      <span>Include details about style, lighting, and mood</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="mr-2 text-blue-500">•</span>
-                      <span>Use negative prompts to avoid unwanted elements</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="mr-2 text-blue-500">•</span>
-                      <span>Higher steps = better quality but slower generation</span>
-                    </li>
+                <div className="border-gradient rounded-2xl bg-bg-secondary p-6">
+                  <h3 className="mb-4 font-display text-xl text-text-primary">Pro Tips</h3>
+                  <ul className="space-y-3">
+                    {[
+                      "Be specific and descriptive in your prompts",
+                      "Include details about style, lighting, and mood",
+                      "Use negative prompts to avoid unwanted elements",
+                      "Higher steps = better quality but slower generation",
+                    ].map((tip, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-3 text-body-sm text-text-secondary"
+                      >
+                        <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-accent" />
+                        <span>{tip}</span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               )}

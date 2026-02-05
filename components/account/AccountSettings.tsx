@@ -45,15 +45,15 @@ export function AccountSettings({
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900">Account Settings</h3>
+      <h3 className="font-display text-xl text-text-primary">Settings</h3>
 
       {/* Email Notifications */}
-      <div className="flex items-center justify-between rounded-lg border-2 border-gray-200 bg-white p-4">
+      <div className="flex items-center justify-between rounded-xl bg-bg-tertiary p-4">
         <div>
-          <label htmlFor="email-notifications" className="font-medium text-gray-900">
+          <label htmlFor="email-notifications" className="font-medium text-text-primary">
             Email Notifications
           </label>
-          <p className="text-sm text-gray-500">
+          <p className="text-body-sm text-text-secondary">
             Receive updates about your generations and account
           </p>
         </div>
@@ -65,23 +65,23 @@ export function AccountSettings({
             onChange={(e) => setEmailNotifications(e.target.checked)}
             className="peer sr-only"
           />
-          <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300"></div>
+          <div className="peer-focus:ring-accent/50 peer h-6 w-11 rounded-full bg-bg-elevated after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-text-tertiary after:transition-all after:content-[''] peer-checked:bg-accent peer-checked:after:translate-x-full peer-checked:after:bg-bg-primary peer-focus:outline-none peer-focus:ring-2"></div>
         </label>
       </div>
 
       {/* Default Model */}
-      <div className="rounded-lg border-2 border-gray-200 bg-white p-4">
-        <label htmlFor="default-model" className="mb-2 block font-medium text-gray-900">
+      <div className="rounded-xl bg-bg-tertiary p-4">
+        <label htmlFor="default-model" className="mb-2 block font-medium text-text-primary">
           Default Model
         </label>
-        <p className="mb-3 text-sm text-gray-500">
+        <p className="mb-3 text-body-sm text-text-secondary">
           Choose your preferred model for image generation
         </p>
         <select
           id="default-model"
           value={defaultModel}
           onChange={(e) => setDefaultModel(e.target.value)}
-          className="w-full rounded-lg border-2 border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+          className="focus:ring-accent/20 w-full rounded-lg border border-border bg-bg-secondary px-4 py-2.5 text-text-primary transition-colors focus:border-accent focus:outline-none focus:ring-2"
         >
           <option value="">No preference</option>
           <option value="openai/dall-e-3">DALL-E 3</option>
@@ -95,15 +95,15 @@ export function AccountSettings({
         <button
           onClick={handleSave}
           disabled={!hasChanges || isSaving}
-          className="rounded-lg bg-blue-500 px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300"
+          className="rounded-lg bg-accent px-6 py-2.5 font-semibold text-bg-primary transition-all duration-300 hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSaving ? "Saving..." : "Save Settings"}
         </button>
 
         {saveMessage && (
           <span
-            className={`text-sm ${
-              saveMessage.includes("success") ? "text-green-600" : "text-red-600"
+            className={`text-body-sm ${
+              saveMessage.includes("success") ? "text-success" : "text-error"
             }`}
           >
             {saveMessage}
@@ -112,13 +112,13 @@ export function AccountSettings({
       </div>
 
       {/* Danger Zone */}
-      <div className="rounded-lg border-2 border-red-200 bg-red-50 p-4">
-        <h4 className="mb-2 font-semibold text-red-900">Danger Zone</h4>
-        <p className="mb-3 text-sm text-red-700">
+      <div className="border-error/30 bg-error/5 rounded-xl border p-4">
+        <h4 className="mb-2 font-semibold text-error">Danger Zone</h4>
+        <p className="mb-3 text-body-sm text-text-secondary">
           Deleting your account will permanently remove all your images, generations, and data. This
           action cannot be undone.
         </p>
-        <button className="rounded-lg border-2 border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-700 transition-colors hover:bg-red-50">
+        <button className="border-error/50 hover:bg-error/10 rounded-lg border bg-transparent px-4 py-2 text-body-sm font-semibold text-error transition-colors">
           Delete Account
         </button>
       </div>

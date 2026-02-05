@@ -72,10 +72,10 @@ interface ModelSelectorProps {
 
 export function ModelSelector({ selected, onChange, disabled = false }: ModelSelectorProps) {
   return (
-    <div className="space-y-3">
-      <label className="block text-sm font-medium text-gray-700">
+    <div className="space-y-4">
+      <label className="block font-medium text-text-primary">
         Model
-        <span className="ml-1 text-red-500">*</span>
+        <span className="ml-1 text-accent">*</span>
       </label>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -85,43 +85,43 @@ export function ModelSelector({ selected, onChange, disabled = false }: ModelSel
             type="button"
             onClick={() => !disabled && onChange(model.id)}
             disabled={disabled}
-            className={`relative rounded-xl border-2 p-5 text-left shadow-sm transition-all ${
+            className={`border-gradient relative rounded-xl p-5 text-left transition-all duration-300 ${
               selected === model.id
-                ? "border-blue-500 bg-blue-50 shadow-md ring-2 ring-blue-200"
-                : "border-gray-200 bg-white hover:border-blue-300 hover:shadow-md"
+                ? "bg-accent/10 ring-2 ring-accent"
+                : "bg-bg-tertiary hover:bg-bg-elevated"
             } ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:scale-[1.02]"} `}
           >
             {/* Recommended Badge */}
             {model.recommended && (
-              <span className="absolute -right-2 -top-2 rounded-full bg-blue-500 px-2 py-1 text-xs font-semibold text-white">
+              <span className="absolute -right-2 -top-2 rounded-full bg-accent px-2.5 py-1 text-body-xs font-semibold text-bg-primary shadow-glow">
                 Recommended
               </span>
             )}
 
             {/* Model Name */}
-            <h3 className="mb-1 font-semibold text-gray-900">{model.name}</h3>
+            <h3 className="mb-1 font-semibold text-text-primary">{model.name}</h3>
 
             {/* Description */}
-            <p className="mb-3 text-xs text-gray-600">{model.description}</p>
+            <p className="mb-4 text-body-xs text-text-secondary">{model.description}</p>
 
             {/* Metadata */}
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-500">Cost:</span>
-                <span className="font-medium text-gray-900">{model.cost} credits</span>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-body-xs">
+                <span className="text-text-tertiary">Cost:</span>
+                <span className="font-medium text-text-primary">{model.cost} credits</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-500">Speed:</span>
+              <div className="flex items-center justify-between text-body-xs">
+                <span className="text-text-tertiary">Speed:</span>
                 <span
-                  className={`font-medium capitalize ${model.speed === "fast" ? "text-green-600" : ""} ${model.speed === "medium" ? "text-yellow-600" : ""} ${model.speed === "slow" ? "text-orange-600" : ""} `}
+                  className={`font-medium capitalize ${model.speed === "fast" ? "text-success" : ""} ${model.speed === "medium" ? "text-warning" : ""} ${model.speed === "slow" ? "text-accent" : ""} `}
                 >
                   {model.speed}
                 </span>
               </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-500">Quality:</span>
+              <div className="flex items-center justify-between text-body-xs">
+                <span className="text-text-tertiary">Quality:</span>
                 <span
-                  className={`font-medium capitalize ${model.quality === "premium" ? "text-purple-600" : ""} ${model.quality === "high" ? "text-blue-600" : ""} ${model.quality === "standard" ? "text-gray-600" : ""} `}
+                  className={`font-medium capitalize ${model.quality === "premium" ? "text-accent" : ""} ${model.quality === "high" ? "text-success" : ""} ${model.quality === "standard" ? "text-text-secondary" : ""} `}
                 >
                   {model.quality}
                 </span>

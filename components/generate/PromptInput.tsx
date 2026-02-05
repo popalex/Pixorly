@@ -23,21 +23,21 @@ export function PromptInput({
     <div className="space-y-4">
       {/* Main Prompt */}
       <div>
-        <label htmlFor="prompt" className="mb-2 block text-sm font-medium text-gray-700">
+        <label htmlFor="prompt" className="mb-2 block font-medium text-text-primary">
           Prompt
-          <span className="ml-1 text-red-500">*</span>
+          <span className="ml-1 text-accent">*</span>
         </label>
         <textarea
           id="prompt"
           rows={4}
-          className="w-full resize-none rounded-lg border-2 border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500"
+          className="focus:ring-accent/20 w-full resize-none rounded-xl border border-border bg-bg-tertiary px-4 py-3 text-text-primary transition-colors placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder="Describe the image you want to generate..."
           value={value}
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
           disabled={disabled}
           required
         />
-        <p className="mt-2 text-xs text-gray-500">
+        <p className="mt-2 text-body-xs text-text-tertiary">
           Be descriptive and specific for best results. Example: &quot;A serene mountain landscape
           at sunset with pine trees in the foreground&quot;
         </p>
@@ -46,14 +46,14 @@ export function PromptInput({
       {/* Negative Prompt (Advanced) */}
       {showAdvanced && onNegativePromptChange && (
         <div>
-          <label htmlFor="negativePrompt" className="mb-2 block text-sm font-medium text-gray-700">
+          <label htmlFor="negativePrompt" className="mb-2 block font-medium text-text-primary">
             Negative Prompt
-            <span className="ml-2 text-xs font-normal text-gray-500">(Optional)</span>
+            <span className="ml-2 text-body-xs font-normal text-text-tertiary">(Optional)</span>
           </label>
           <textarea
             id="negativePrompt"
             rows={2}
-            className="w-full resize-none rounded-lg border-2 border-gray-300 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500"
+            className="focus:ring-accent/20 w-full resize-none rounded-xl border border-border bg-bg-tertiary px-4 py-3 text-text-primary transition-colors placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="What to avoid in the image..."
             value={negativePrompt || ""}
             onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
@@ -61,7 +61,7 @@ export function PromptInput({
             }
             disabled={disabled}
           />
-          <p className="mt-2 text-xs text-gray-500">
+          <p className="mt-2 text-body-xs text-text-tertiary">
             Specify what you don&apos;t want in the image (e.g., &quot;blurry, low quality,
             watermark&quot;)
           </p>

@@ -1,15 +1,17 @@
 "use client";
 
 import { useQuery } from "convex/react";
+import { useAuth } from "@clerk/nextjs";
 import { api } from "@/convex/_generated/api";
 
 export function UsageHistory() {
-  const stats = useQuery(api.users.getUserUsageStats);
+  const { isSignedIn, isLoaded } = useAuth();
+  const stats = useQuery(api.users.getUserUsageStats, isLoaded && isSignedIn ? {} : "skip");
 
-  if (!stats) {
+  if (!isLoaded || !stats) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
       </div>
     );
   }
@@ -27,15 +29,15 @@ export function UsageHistory() {
   const getStatusBadge = (status: string) => {
     const config =
       {
-        completed: "bg-green-100 text-green-800",
-        failed: "bg-red-100 text-red-800",
-        processing: "bg-blue-100 text-blue-800",
-        pending: "bg-yellow-100 text-yellow-800",
-        uploading: "bg-purple-100 text-purple-800",
-      }[status] || "bg-gray-100 text-gray-800";
+        completed: "bg-success/20 text-success",
+        failed: "bg-error/20 text-error",
+        processing: "bg-accent/20 text-accent",
+        pending: "bg-warning/20 text-warning",
+        uploading: "bg-accent/20 text-accent",
+      }[status] || "bg-bg-tertiary text-text-secondary";
 
     return (
-      <span className={`rounded-full px-2 py-1 text-xs font-semibold ${config}`}>
+      <span className={`rounded-full px-2.5 py-1 text-body-xs font-semibold ${config}`}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </span>
     );
@@ -43,52 +45,64 @@ export function UsageHistory() {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900">Usage Statistics</h3>
+      <h3 className="font-display text-xl text-text-primary">Usage Statistics</h3>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-lg border-2 border-gray-200 bg-white p-4">
-          <p className="text-sm text-gray-600">Total Images</p>
-          <p className="mt-1 text-2xl font-bold text-gray-900">{stats.totalImages}</p>
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="rounded-xl bg-bg-tertiary p-4">
+          <p className="text-body-xs font-medium uppercase tracking-widest text-text-tertiary">
+            Total Images
+          </p>
+          <p className="mt-1 font-display text-display-sm text-text-primary">{stats.totalImages}</p>
         </div>
 
-        <div className="rounded-lg border-2 border-gray-200 bg-white p-4">
-          <p className="text-sm text-gray-600">Successful Generations</p>
-          <p className="mt-1 text-2xl font-bold text-green-600">{stats.successfulGenerations}</p>
+        <div className="rounded-xl bg-bg-tertiary p-4">
+          <p className="text-body-xs font-medium uppercase tracking-widest text-text-tertiary">
+            Successful
+          </p>
+          <p className="mt-1 font-display text-display-sm text-success">
+            {stats.successfulGenerations}
+          </p>
         </div>
 
-        <div className="rounded-lg border-2 border-gray-200 bg-white p-4">
-          <p className="text-sm text-gray-600">Failed Generations</p>
-          <p className="mt-1 text-2xl font-bold text-red-600">{stats.failedGenerations}</p>
+        <div className="rounded-xl bg-bg-tertiary p-4">
+          <p className="text-body-xs font-medium uppercase tracking-widest text-text-tertiary">
+            Failed
+          </p>
+          <p className="mt-1 font-display text-display-sm text-error">{stats.failedGenerations}</p>
         </div>
 
-        <div className="rounded-lg border-2 border-gray-200 bg-white p-4">
-          <p className="text-sm text-gray-600">Images (Last 30 Days)</p>
-          <p className="mt-1 text-2xl font-bold text-blue-600">{stats.imagesLast30Days}</p>
+        <div className="rounded-xl bg-bg-tertiary p-4">
+          <p className="text-body-xs font-medium uppercase tracking-widest text-text-tertiary">
+            Last 30 Days
+          </p>
+          <p className="mt-1 font-display text-display-sm text-accent">{stats.imagesLast30Days}</p>
         </div>
       </div>
 
       {/* Recent Activity */}
       <div>
-        <h4 className="mb-4 font-semibold text-gray-900">Recent Activity</h4>
+        <h4 className="mb-4 font-medium text-text-primary">Recent Activity</h4>
 
         {stats.recentJobs.length === 0 ? (
-          <div className="rounded-lg border-2 border-gray-200 bg-gray-50 p-8 text-center">
-            <p className="text-gray-500">No generation history yet</p>
-            <p className="mt-1 text-sm text-gray-400">Your recent generations will appear here</p>
+          <div className="rounded-xl bg-bg-tertiary p-8 text-center">
+            <p className="text-text-secondary">No generation history yet</p>
+            <p className="mt-1 text-body-sm text-text-tertiary">
+              Your recent generations will appear here
+            </p>
           </div>
         ) : (
           <div className="space-y-3">
             {stats.recentJobs.map((job) => (
               <div
                 key={job._id}
-                className="rounded-lg border-2 border-gray-200 bg-white p-4 transition-colors hover:bg-gray-50"
+                className="rounded-xl bg-bg-tertiary p-4 transition-colors hover:bg-bg-elevated"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">{job.prompt}</p>
-                    <div className="mt-2 flex flex-wrap gap-2 text-sm text-gray-500">
-                      <span>Model: {job.model.split("/").pop()}</span>
+                    <p className="font-medium text-text-primary">{job.prompt}</p>
+                    <div className="mt-2 flex flex-wrap gap-2 text-body-sm text-text-tertiary">
+                      <span>{job.model.split("/").pop()}</span>
                       <span>•</span>
                       <span>
                         {job.width}x{job.height}
@@ -102,13 +116,13 @@ export function UsageHistory() {
                         </>
                       )}
                     </div>
-                    <p className="mt-1 text-xs text-gray-400">{formatDate(job.createdAt)}</p>
+                    <p className="mt-1 text-body-xs text-text-muted">{formatDate(job.createdAt)}</p>
                   </div>
                   <div className="ml-4">{getStatusBadge(job.status)}</div>
                 </div>
 
                 {job.error && (
-                  <div className="mt-2 rounded bg-red-50 p-2 text-sm text-red-700">
+                  <div className="bg-error/10 mt-2 rounded-lg p-2 text-body-sm text-error">
                     Error: {job.error}
                   </div>
                 )}

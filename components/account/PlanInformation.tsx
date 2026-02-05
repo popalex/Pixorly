@@ -9,14 +9,12 @@ interface PlanInformationProps {
 export function PlanInformation({ plan, subscriptionStatus, trialEndsAt }: PlanInformationProps) {
   const planDetails = {
     free: {
-      name: "Free Plan",
-      color: "bg-gray-100 text-gray-800 border-gray-300",
+      name: "Free",
       features: ["10 credits per month", "1 GB storage", "Basic models", "Community support"],
       price: "$0/month",
     },
     pro: {
-      name: "Pro Plan",
-      color: "bg-blue-100 text-blue-800 border-blue-300",
+      name: "Pro",
       features: [
         "500 credits per month",
         "100 GB storage",
@@ -27,8 +25,7 @@ export function PlanInformation({ plan, subscriptionStatus, trialEndsAt }: PlanI
       price: "$29/month",
     },
     enterprise: {
-      name: "Enterprise Plan",
-      color: "bg-purple-100 text-purple-800 border-purple-300",
+      name: "Enterprise",
       features: [
         "2000 credits per month",
         "500 GB storage",
@@ -38,7 +35,7 @@ export function PlanInformation({ plan, subscriptionStatus, trialEndsAt }: PlanI
         "Custom integrations",
         "Team collaboration",
       ],
-      price: "Custom pricing",
+      price: "Custom",
     },
   }[plan];
 
@@ -46,14 +43,14 @@ export function PlanInformation({ plan, subscriptionStatus, trialEndsAt }: PlanI
     if (!subscriptionStatus) return null;
 
     const statusConfig = {
-      active: "bg-green-100 text-green-800",
-      trialing: "bg-blue-100 text-blue-800",
-      canceled: "bg-red-100 text-red-800",
-      past_due: "bg-yellow-100 text-yellow-800",
+      active: "bg-success/20 text-success",
+      trialing: "bg-accent/20 text-accent",
+      canceled: "bg-error/20 text-error",
+      past_due: "bg-warning/20 text-warning",
     }[subscriptionStatus];
 
     return (
-      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusConfig}`}>
+      <span className={`rounded-full px-3 py-1 text-body-xs font-semibold ${statusConfig}`}>
         {subscriptionStatus.charAt(0).toUpperCase() + subscriptionStatus.slice(1)}
       </span>
     );
@@ -65,7 +62,7 @@ export function PlanInformation({ plan, subscriptionStatus, trialEndsAt }: PlanI
     const daysRemaining = Math.ceil((trialEndsAt - Date.now()) / (1000 * 60 * 60 * 24));
 
     return (
-      <div className="mt-3 rounded-lg bg-blue-50 p-3 text-sm text-blue-700">
+      <div className="border-accent/30 bg-accent/10 mt-4 rounded-xl border p-3 text-body-sm text-accent">
         🎉 Trial period: {daysRemaining} days remaining
       </div>
     );
@@ -76,8 +73,8 @@ export function PlanInformation({ plan, subscriptionStatus, trialEndsAt }: PlanI
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{planDetails.name}</h3>
-          <p className="text-sm text-gray-500">{planDetails.price}</p>
+          <h3 className="font-display text-xl text-text-primary">{planDetails.name}</h3>
+          <p className="text-body-sm text-text-secondary">{planDetails.price}</p>
         </div>
         {getStatusBadge()}
       </div>
@@ -86,13 +83,15 @@ export function PlanInformation({ plan, subscriptionStatus, trialEndsAt }: PlanI
       {getTrialMessage()}
 
       {/* Features */}
-      <div className="rounded-lg border-2 border-gray-200 bg-white p-4">
-        <h4 className="mb-3 text-sm font-semibold text-gray-700">Plan Features</h4>
+      <div className="rounded-xl bg-bg-tertiary p-4">
+        <h4 className="mb-3 text-body-xs font-semibold uppercase tracking-widest text-text-tertiary">
+          Plan Features
+        </h4>
         <ul className="space-y-2">
           {planDetails.features.map((feature, index) => (
-            <li key={index} className="flex items-start text-sm text-gray-600">
+            <li key={index} className="flex items-start text-body-sm text-text-secondary">
               <svg
-                className="mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-green-500"
+                className="mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-accent"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -112,13 +111,13 @@ export function PlanInformation({ plan, subscriptionStatus, trialEndsAt }: PlanI
 
       {/* Upgrade CTA */}
       {plan === "free" && (
-        <button className="w-full rounded-lg bg-blue-500 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-600">
+        <button className="bg-accent-gradient w-full rounded-xl px-4 py-3 font-semibold text-bg-primary shadow-glow transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_var(--accent-glow)]">
           Upgrade to Pro
         </button>
       )}
 
       {plan === "pro" && (
-        <button className="w-full rounded-lg border-2 border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50">
+        <button className="w-full rounded-xl border border-border bg-bg-tertiary px-4 py-3 font-medium text-text-secondary transition-all duration-300 hover:border-accent hover:text-accent">
           Manage Subscription
         </button>
       )}

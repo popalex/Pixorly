@@ -28,17 +28,17 @@ export function GenerationResult({ jobId }: GenerationResultProps) {
     <div className="space-y-6">
       {/* Result Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">Generated Images</h3>
+        <h3 className="font-display text-lg font-semibold text-text-primary">Generated Images</h3>
         <div className="flex gap-2">
           <button
             onClick={() => downloadImage(selectedImageId)}
-            className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-600"
+            className="rounded-xl bg-accent px-4 py-2 text-body-sm font-medium text-bg-primary transition-all duration-300 hover:bg-accent-hover hover:shadow-glow"
           >
             Download
           </button>
           <button
             onClick={() => shareImage(selectedImageId)}
-            className="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+            className="rounded-xl border border-border bg-bg-tertiary px-4 py-2 text-body-sm font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent"
           >
             Share
           </button>
@@ -46,7 +46,7 @@ export function GenerationResult({ jobId }: GenerationResultProps) {
       </div>
 
       {/* Main Image Display */}
-      <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
+      <div className="relative aspect-square overflow-hidden rounded-2xl border border-border bg-bg-tertiary">
         <ImageDisplay imageId={selectedImageId} />
       </div>
 
@@ -59,10 +59,10 @@ export function GenerationResult({ jobId }: GenerationResultProps) {
               <button
                 key={imageId}
                 onClick={() => setSelectedIndex(index)}
-                className={`relative aspect-square overflow-hidden rounded-lg border-2 transition-all ${
+                className={`relative aspect-square overflow-hidden rounded-xl border-2 transition-all duration-300 ${
                   selectedIndex === index
-                    ? "border-blue-500 ring-2 ring-blue-200"
-                    : "border-gray-200 hover:border-gray-300"
+                    ? "ring-accent/30 border-accent shadow-glow ring-2"
+                    : "hover:border-accent/50 border-border"
                 } `}
               >
                 <ImageDisplay imageId={imageId} />
@@ -73,49 +73,53 @@ export function GenerationResult({ jobId }: GenerationResultProps) {
       )}
 
       {/* Image Metadata */}
-      <div className="space-y-3 rounded-lg bg-gray-50 p-4">
-        <h4 className="text-sm font-semibold text-gray-900">Generation Details</h4>
+      <div className="space-y-4 rounded-2xl bg-bg-tertiary p-5">
+        <h4 className="font-display text-body-sm font-semibold text-text-primary">
+          Generation Details
+        </h4>
 
-        <div className="space-y-2 text-sm">
+        <div className="space-y-3 text-body-sm">
           <div className="flex justify-between">
-            <span className="text-gray-600">Prompt:</span>
-            <span className="max-w-md truncate text-right font-medium text-gray-900">
+            <span className="text-text-tertiary">Prompt:</span>
+            <span className="max-w-md truncate text-right font-medium text-text-primary">
               {job.prompt}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Model:</span>
-            <span className="font-medium text-gray-900">{job.model}</span>
+            <span className="text-text-tertiary">Model:</span>
+            <span className="font-medium text-text-primary">{job.model}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Resolution:</span>
-            <span className="font-medium text-gray-900">
+            <span className="text-text-tertiary">Resolution:</span>
+            <span className="font-medium text-text-primary">
               {job.width}x{job.height}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Credits Used:</span>
-            <span className="font-medium text-gray-900">{job.creditsUsed}</span>
+            <span className="text-text-tertiary">Credits Used:</span>
+            <span className="font-medium text-accent">{job.creditsUsed}</span>
           </div>
           {job.seed && (
             <div className="flex justify-between">
-              <span className="text-gray-600">Seed:</span>
-              <span className="font-mono text-xs font-medium text-gray-900">{job.seed}</span>
+              <span className="text-text-tertiary">Seed:</span>
+              <span className="font-mono text-body-xs font-medium text-text-primary">
+                {job.seed}
+              </span>
             </div>
           )}
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2 border-t border-gray-200 pt-3">
+        <div className="flex gap-2 border-t border-border-subtle pt-4">
           <button
             onClick={() => copyPrompt(job.prompt)}
-            className="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="flex-1 rounded-xl border border-border bg-bg-secondary px-3 py-2.5 text-body-xs font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent"
           >
             Copy Prompt
           </button>
           <button
             onClick={() => handleUseAsTemplate(job)}
-            className="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="flex-1 rounded-xl border border-border bg-bg-secondary px-3 py-2.5 text-body-xs font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent"
           >
             Use as Template
           </button>
@@ -136,8 +140,8 @@ function ImageDisplay({ imageId }: { imageId: Id<"images"> }) {
   return (
     <>
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
-          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-400"></div>
+        <div className="absolute inset-0 flex items-center justify-center bg-bg-tertiary">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-accent"></div>
         </div>
       )}
       <Image
